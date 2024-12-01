@@ -85,3 +85,8 @@ uint32_t get_4_char(uint8_t chargroup_n)
 		return 0; // Invalid group number
 	return CHAR_GEN_REG(CHAR_GEN_CHAR_GROUP_1 + chargroup_n * 4);
 }
+
+uint8_t get_checksum(void)
+{
+	return CHAR_GEN_REG(CHAR_GEN_CHECKSUM_OFFSET);
+}

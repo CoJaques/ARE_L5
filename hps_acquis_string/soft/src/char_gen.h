@@ -128,4 +128,10 @@ char read_char(uint8_t char_n);
  */
 uint32_t get_4_char(uint8_t chargroup_n);
 
+/**
+ * @brief Reads the checksum of the 16-character string.
+ * @param None
+ * @return uint8_t The checksum value.
+ */
+uint8_t get_checksum(void);
 #endif // CHAR_GEN_H
