@@ -7,28 +7,47 @@
  * Reconfigurable Embedded Digital Systems
  *****************************************************************************************
  *
- * File                 : axi_lw.h
- * Author               : Anthony Convers
- * Date                 : 27.07.2022
+ * File                 : pio_function.c
+ * Author               : Colin Jaques
+ * Date                 : 
  *
  * Context              : ARE lab
  *
  *****************************************************************************************
- * Brief: Header file for bus AXI lightweight HPS to FPGA defines definition
+ * Brief: Pio function
  *
  *****************************************************************************************
  * Modifications :
  * Ver    Date        Student      Comments
- * 0.0    27.07.2022  ACS           Initial version.
- * 1.0    01.12.2024  AIO/CJS       Adaptation for the ARE lab
+ * 1.0    13.10.2024  CJS          INITIAL VERSION
+ *
 *****************************************************************************************/
 #include <stdint.h>
+#include <stdbool.h>
+#include "axi_lw.h"
+#include "pio_function.h"
 
-// Base address
-#define AXI_LW_HPS_FPGA_BASE_ADD 0xFF200000
+uint32_t Switchs_read(void)
+{
+	return SWITCH_REG;
+}
 
-// ACCESS MACROS
-#define AXI_LW_REG(_x_)                         \
-	*(volatile uint32_t                     \
-		  *)(AXI_LW_HPS_FPGA_BASE_ADD + \
-		     _x_) // _x_ is an offset with respect to the base address
+void Leds_set(uint32_t maskleds)
+{
+	LED_REG |= maskleds & LED_MASK;
+}
+
+void Leds_clear(uint32_t maskleds)
+{
+	LED_REG &= ~(maskleds & LED_MASK);
+}
+
+void Leds_toggle(uint32_t maskleds)
+{
+	LED_REG ^= (maskleds)&LED_MASK;
+}
+
+bool Key_read(int key_number)
+{
+	return !(BUTTON_REG & (1 << key_number));
+}
