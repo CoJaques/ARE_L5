@@ -1,127 +1,79 @@
 /*****************************************************************************************
  * HEIG-VD
- * Haute Ecole d'Ingénierie et de Gestion du Canton de Vaud
+ * Haute Ecole d'Ingenerie et de Gestion du Canton de Vaud
  * School of Business and Engineering in Canton de Vaud
  *****************************************************************************************
  * REDS Institute
  * Reconfigurable Embedded Digital Systems
  *****************************************************************************************
  *
- * File                 : char_gen.h
- * Author               : Colin Jaques & Alexandre Iorio
- * Date                 : 01.12.2024
+ * File                 : function.h
+ * Author               : Anthony Convers
+ * Date                 : 27.07.2022
  *
  * Context              : ARE lab
  *
  *****************************************************************************************
- * Brief: Header file for char generator interface
+ * Brief: Header file for base interface
  *
  *****************************************************************************************
  * Modifications :
  * Ver    Date        Student      Comments
- * 1.0    01.12.2024  CJS          Initial version
+ * 0.0    27.07.2022  ACS           Initial version.
+ * 1.0    01.12.2024  CJS          Implement lab5.
  *
- *****************************************************************************************/
-
-#ifndef CHAR_GEN_H
-#define CHAR_GEN_H
-
+*****************************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
+#include "axi_lw.h"
+
+#define INTERFACE_OFFSET   0x10000
+#define INTERFACE_ADDR	   (AXI_LW_HPS_FPGA_BASE_ADD + INTERFACE_OFFSET)
+
+#define INTERFACE_REG(_x_) *(volatile uint32_t *)(INTERFACE_ADDR + _x_)
+
+// Constant ID
+#define CONST_ID	   INTERFACE_REG(0x0)
+#define BUTTON_REG	   INTERFACE_REG(0x4)
+#define SWITCH_REG	   INTERFACE_REG(0x8)
+#define LED_REG		   INTERFACE_REG(0xC)
+#define LED_MASK	   0x2FF
+
+#define NUM_KEYS	   4
+#define KEY_0		   0
+#define KEY_1		   1
+#define KEY_2		   2
+#define KEY_3		   3
 
 //***********************************//
-//******* Address and Offsets ******//
+//****** Global usage function ******//
 
-// Base address for char generator on AXI lightweight bus
-#define CHAR_GEN_BASE_ADDR       0x010000
+// Switchs_read function : Read the switchs value
+// Parameter : None
+// Return : Value of all Switchs (SW9 to SW0)
+uint32_t Switchs_read(void);
 
-// Register offsets for char generator functionalities
-#define CHAR_GEN_INIT_OFFSET     0x10  // Command to initialize the generator
-#define CHAR_GEN_MODE_OFFSET     0x14  // Command to set generation mode
-#define CHAR_GEN_NEW_CHAR_OFFSET 0x10  // Command to generate a new char (manual mode)
-#define CHAR_GEN_DELAY_OFFSET    0x14  // Command to set generation delay (auto mode)
-#define CHAR_GEN_STATUS_OFFSET   0x10  // Read status of the generator
-#define CHAR_GEN_CHAR_GROUP_1    0x20  // Read characters 1-4
-#define CHAR_GEN_CHAR_GROUP_2    0x24  // Read characters 5-8
-#define CHAR_GEN_CHAR_GROUP_3    0x28  // Read characters 9-12
-#define CHAR_GEN_CHAR_GROUP_4    0x2C  // Read characters 13-16
-#define CHAR_GEN_CHECKSUM_OFFSET 0x30  // Read checksum of the 16-character string
+// Leds_write function : Write a value to all Leds (LED9 to LED0)
+// Parameter : "value"= data to be applied to all Leds
+// Return : None
+void Leds_write(uint32_t value);
 
-// Masks for specific bit operations
-#define INIT_MASK                0x01  // Mask for initialization command
-#define NEW_CHAR_MASK            0x10  // Mask for generating new characters
-#define MODE_MASK                0x10  // Mask for generation mode (manual/auto)
-#define DELAY_MASK               0x03  // Mask for generation delay (2 bits)
+// Leds_set function : Set to ON some or all Leds (LED9 to LED0)
+// Parameter : "maskleds"= Leds selected to apply a set (maximum 0x3FF)
+// Return : None
+void Leds_set(uint32_t maskleds);
 
-//***********************************//
-//******** Function Prototypes ******//
+// Leds_clear function : Clear to OFF some or all Leds (LED9 to LED0)
+// Parameter : "maskleds"= Leds selected to apply a clear (maximum 0x3FF)
+// Return : None
+void Leds_clear(uint32_t maskleds);
 
-/**
- * @brief Initializes the char generator to its default state.
- *        This resets the 16 characters and checksum to their initial values.
- * @param None
- * @return None
- */
-void generator_init(void);
+// Leds_toggle function : Toggle the curent value of some or all Leds (LED9 to LED0)
+// Parameter : "maskleds"= Leds selected to apply a toggle (maximum 0x3FF)
+// Return : None
+void Leds_toggle(uint32_t maskleds);
 
-/**
- * @brief Changes the generation mode of the char generator.
- * @param mode The desired mode:
- *             - 0: Manual mode
- *             - 1: Automatic mode
- * @return None
- */
-void generator_change_mode(int mode);
-
-/**
- * @brief Gets the current generation mode of the char generator.
- * @param None
- * @return int The current mode:
- *             - 0: Manual mode
- *             - 1: Automatic mode
- */
-int generator_get_mode(void);
-
-/**
- * @brief Changes the generation speed of the char generator (automatic mode only).
- * @param speed The desired speed (2 bits):
- *              - 0: 1 Hz
- *              - 1: 1 KHz
- *              - 2: 100 KHz
- *              - 3: 1 MHz
- * @return None
- */
-void generator_change_speed(int speed);
-
-/**
- * @brief Gets the current generation speed of the char generator.
- * @param None
- * @return int The current speed:
- *             - 0: 1 Hz
- *             - 1: 1 KHz
- *             - 2: 100 KHz
- *             - 3: 1 MHz
- */
-int generator_get_speed(void);
-
-/**
- * @brief Generates a new 16-character string (manual mode only).
- * @param None
- * @return None
- */
-void generator_generate(void);
-
-/**
- * @brief Reads a specific character from the 16-character string.
- * @return char The ASCII value of the character.
- */
-char read_char(uint8_t char_n);
-
-/**
- * @brief Reads a group of 4 characters from the 16-character string.
- * @param chargroup_n The group index to read (0-3).
- * @return uint32_t The 4 characters packed into a 32-bit value.
- */
-uint32_t get_4_char(uint8_t chargroup_n);
-
-#endif // CHAR_GEN_H
+// Key_read function : Read one Key status, pressed or not (KEY0 or KEY1 or KEY2 or KEY3)
+// Parameter : "key_number"= select the key number to read, from 0 to 3
+// Return : True(1) if key is pressed, and False(0) if key is not pressed
+bool Key_read(int key_number);
