@@ -80,6 +80,7 @@ architecture rtl of avl_user_interface is
     
     constant USER_ID            : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
     constant BAD_ADDRESS_VAL    : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
+    constant USER_ID_ADDR       : std_logic_vector(15 downto 0):= x"0000";
     constant BTN_ADDR           : std_logic_vector(15 downto 0):= x"0004";
     constant SWITCH_ADDR        : std_logic_vector(15 downto 0):= x"0008";
     constant LED_ADDR           : std_logic_vector(15 downto 0):= x"000C";
@@ -91,6 +92,7 @@ architecture rtl of avl_user_interface is
     constant CHAR_9_TO_12_ADDR  : std_logic_vector(15 downto 0):= x"0028";
     constant CHAR_13_TO_16_ADDR : std_logic_vector(15 downto 0):= x"002C";
     constant CHECKSUM_ADDR      : std_logic_vector(15 downto 0):= x"0030";
+
     --| Signals declarations   |--------------------------------------------------------------   
     -- Inputs signals 
     ---- I/O DE1-SoC
@@ -123,11 +125,13 @@ architecture rtl of avl_user_interface is
     signal cmd_init_s        : std_logic;
     signal cmd_new_char_s    : std_logic;
     signal auto_s            : std_logic;
+    signal mode_s            : std_logic;
     signal delay_s           : std_logic_vector(1 downto 0);
+    signal status_s          : std_logic_vector(1 downto 0);
 
 begin
     
-    -- Read access part
+    -- sync input part
 
     sync_input_reg: process (avl_clk_i, avl_reset_i)
         begin
@@ -175,8 +179,38 @@ begin
             end if;
         end process;
 
-    
-    -- Write access part
+    -- Read access part 
+        
+    read_access: process(avl_clk_i, avl_reset_i)
+        begin
+            if avl_reset_i = '1' then
+                avl_readdata_o <= (others => '0');
+                avl_readdatavalid_o <= '0';
+            elsif rising_edge(avl_clk_i) then
+                avl_readdatavalid_o <= avl_read_i;
+                if avl_read_i = '1' then 
+                    avl_readdata_o <= (others => '0');
+                    case avl_address_i is
+                        when USER_ID_ADDR       => avl_readdata_o <= USER_ID;
+                        when BTN_ADDR           => avl_readdata_o(button_s'range)<= button_s;
+                        when SWITCH_ADDR        => avl_readdata_o(switch_s'range)<= switch_s;
+                        when LED_ADDR           => avl_readdata_o(leds_s'range)<= leds_s;
+                        when STATUS_ADDR        => avl_readdata_o(status_s'range) <= status_s;
+                        when MODE_GEN_ADDR      => avl_readdata_o(0) <= mode_s;
+                        when DELAY_GEN_ADDR     => avl_readdata_o(delay_s'range) <= delay_s;
+                        when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_s & char_2_s & char_3_s & char_4_s;
+                        when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_s & char_6_s & char_7_s & char_8_s;
+                        when CHAR_9_TO_12_ADDR  => avl_readdata_o(31 downto 0) <= char_9_s & char_10_s & char_11_s & char_12_s;
+                        when CHAR_13_TO_16_ADDR => avl_readdata_o(31 downto 0) <= char_13_s & char_14_s & char_15_s & char_16_s;
+                        when CHECKSUM_ADDR      => avl_readdata_o(checksum_s'range) <= checksum_s;
+                        when others             => avl_readdata_o <= BAD_ADDRESS_VAL;
+                    end case;
+                end if;
+            end if;
+        end process;
+        -- Write access part
+
+
     
     -- Interface management
     
