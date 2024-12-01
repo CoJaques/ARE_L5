@@ -85,6 +85,8 @@ architecture rtl of avl_user_interface is
     constant SWITCH_ADDR        : std_logic_vector(15 downto 0):= x"0008";
     constant LED_ADDR           : std_logic_vector(15 downto 0):= x"000C";
     constant STATUS_ADDR        : std_logic_vector(15 downto 0):= x"0010";
+    constant CMD_INIT_ADDR      : std_logic_vector(15 downto 0):= x"0010";
+    constant CMD_NEW_CHAR_ADDR  : std_logic_vector(15 downto 0):= x"0010";
     constant MODE_GEN_ADDR      : std_logic_vector(15 downto 0):= x"0014";
     constant DELAY_GEN_ADDR     : std_logic_vector(15 downto 0):= x"0014";
     constant CHAR_1_TO_4_ADDR   : std_logic_vector(15 downto 0):= x"0020";
@@ -128,6 +130,7 @@ architecture rtl of avl_user_interface is
     signal mode_s            : std_logic;
     signal delay_s           : std_logic_vector(1 downto 0);
     signal status_s          : std_logic_vector(1 downto 0);
+
 
 begin
     
@@ -210,8 +213,28 @@ begin
         end process;
         -- Write access part
 
-
-    
+    write_access: process(avl_clk_i, avl_reset_i)
+        begin
+            -- Default values
+            if avl_reset_i = '1' then
+                leds_s <= (others => '0'); 
+                mode_s <= '0';
+                delay_s <= (others => '0');
+                cmd_new_char_s <= '0';
+                cmd_init_s <= '0';
+            elsif rising_edge(avl_clk_i) then
+                if avl_write_i = '1' then 
+                    case avl_address_i is
+                        when LED_ADDR       => leds_s <= avl_writedata_i(leds_s'range);
+                        when CMD_INIT_ADDR  => cmd_init_s <= avl_writedata_i(0);
+                        when CMD_NEW_CHAR_ADDR => cmd_new_char_s <= avl_writedata_i(0);
+                        when MODE_GEN_ADDR  => mode_s <= avl_writedata_i(0);
+                        when DELAY_GEN_ADDR => delay_s <= avl_writedata_i(delay_s'range);  
+                        when others => null;
+                    end case;
+                end if;
+            end if;
+        end process;
     -- Interface management
     
 end rtl; 
