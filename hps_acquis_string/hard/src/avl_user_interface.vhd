@@ -78,6 +78,8 @@ architecture rtl of avl_user_interface is
     
     --| Constants declarations |--------------------------------------------------------------
     
+    constant USER_ID          : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
+    constant BAD_ADDRESS_VAL  : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
     --| Signals declarations   |--------------------------------------------------------------   
 
 begin
