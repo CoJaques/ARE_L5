@@ -81,18 +81,20 @@ architecture rtl of avl_user_interface is
     --| Constants declarations |--------------------------------------------------------------
     
     constant USER_ID            : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
-    constant BAD_ADDRESS_VAL    : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
+    constant BAD_ADDRESS_VAL    : std_logic_vector(avl_readdata_o'range):= x"badcaffe";
     constant USER_ID_ADDR       : std_logic_vector(13 downto 0):= "00" & x"000";
-    constant BTN_ADDR           : std_logic_vector(13 downto 0):= "00" & x"004";
-    constant SWITCH_ADDR        : std_logic_vector(13 downto 0):= "00" & x"008";
-    constant LED_ADDR           : std_logic_vector(13 downto 0):= "00" & x"00C";
-    constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "00" & x"010";
-    constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "00" & x"014";
-    constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "00" & x"020";
-    constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "00" & x"024";
-    constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "00" & x"028";
-    constant CHAR_13_TO_16_ADDR : std_logic_vector(13 downto 0):= "00" & x"02C";
-    constant CHECKSUM_ADDR      : std_logic_vector(13 downto 0):= "00" & x"030";
+    constant BTN_ADDR           : std_logic_vector(13 downto 0):= "00" & x"001";
+    constant SWITCH_ADDR        : std_logic_vector(13 downto 0):= "00" & x"002";
+    constant LED_ADDR           : std_logic_vector(13 downto 0):= "00" & x"003";
+    constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "00" & x"004";
+    constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "00" & x"005";
+    constant RESERVED_1_ADDR    : std_logic_vector(13 downto 0):= "00" & x"006";
+    constant RESERVED_2_ADDR    : std_logic_vector(13 downto 0):= "00" & x"007";
+    constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "00" & x"008";
+    constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "00" & x"009";
+    constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "00" & x"00A";
+    constant CHAR_13_TO_16_ADDR : std_logic_vector(13 downto 0):= "00" & x"00B";
+    constant CHECKSUM_ADDR      : std_logic_vector(13 downto 0):= "00" & x"00C";
 
     --| Signals declarations   |--------------------------------------------------------------   
     -- Inputs signals 
