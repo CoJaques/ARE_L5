@@ -29,6 +29,8 @@
 library ieee;
     use ieee.std_logic_1164.all;
     use ieee.numeric_std.all;
+
+use std.textio.all;
     
 entity avl_user_interface is
   port(
@@ -81,16 +83,16 @@ architecture rtl of avl_user_interface is
     constant USER_ID            : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
     constant BAD_ADDRESS_VAL    : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
     constant USER_ID_ADDR       : std_logic_vector(13 downto 0):= "00" & x"000";
-    constant BTN_ADDR           : std_logic_vector(13 downto 0):= "00" & x"004";
-    constant SWITCH_ADDR        : std_logic_vector(13 downto 0):= "00" & x"008";
-    constant LED_ADDR           : std_logic_vector(13 downto 0):= "00" & x"00C";
-    constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "00" & x"010";
-    constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "00" & x"014";
-    constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "00" & x"020";
-    constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "00" & x"024";
-    constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "00" & x"028";
-    constant CHAR_13_TO_16_ADDR : std_logic_vector(13 downto 0):= "00" & x"02C";
-    constant CHECKSUM_ADDR      : std_logic_vector(13 downto 0):= "00" & x"030";
+    constant BTN_ADDR           : std_logic_vector(13 downto 0):= "10" & x"004";
+    constant SWITCH_ADDR        : std_logic_vector(13 downto 0):= "10" & x"008";
+    constant LED_ADDR           : std_logic_vector(13 downto 0):= "10" & x"00C";
+    constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "10" & x"010";
+    constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "10" & x"014";
+    constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "10" & x"020";
+    constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "10" & x"024";
+    constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "10" & x"028";
+    constant CHAR_13_TO_16_ADDR : std_logic_vector(13 downto 0):= "10" & x"02C";
+    constant CHECKSUM_ADDR      : std_logic_vector(13 downto 0):= "10" & x"030";
 
     --| Signals declarations   |--------------------------------------------------------------   
     -- Inputs signals 
@@ -182,11 +184,15 @@ begin
     -- Read access part 
         
     read_access: process(avl_clk_i, avl_reset_i)
+        variable line_var : line;
         begin
             if avl_reset_i = '1' then
                 avl_readdata_o <= (others => '0');
                 avl_readdatavalid_o <= '0';
             elsif rising_edge(avl_clk_i) then
+                write(line_var, string'("L'adresse est : "));
+                write(line_var, avl_address_i);  -- Conversion automatique
+                writeline(output, line_var);    -- Affiche dans la console ou le fichier
                 avl_readdatavalid_o <= avl_read_i;
                 if avl_read_i = '1' then 
                     avl_readdata_o <= (others => '0');
@@ -210,6 +216,8 @@ begin
         -- Write access part
 
     write_access: process(avl_clk_i, avl_reset_i)
+
+        variable line_var : line;
         begin
             -- Default values
             if avl_reset_i = '1' then
@@ -219,6 +227,9 @@ begin
                 cmd_new_char_s <= '0';
                 cmd_init_s <= '0';
             elsif rising_edge(avl_clk_i) then
+                write(line_var, string'("L'adresse est : "));
+                write(line_var, avl_address_i);  -- Conversion automatique
+                writeline(output, line_var);    -- Affiche dans la console ou le fichier
                 if avl_write_i = '1' then 
                     case avl_address_i is
                         when LED_ADDR       => leds_s <= avl_writedata_i(leds_s'range);
