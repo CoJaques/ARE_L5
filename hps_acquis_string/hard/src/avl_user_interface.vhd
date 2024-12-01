@@ -135,6 +135,7 @@ begin
     
     -- sync input part
 
+    // pas besoin de sync les chars
     sync_input_reg: process (avl_clk_i, avl_reset_i)
         begin
             if avl_reset_i = '1' then
@@ -203,6 +204,7 @@ begin
                         when LED_ADDR           => avl_readdata_o(leds_s'range)<= leds_s;
                         when STATUS_CMD_ADDR        => avl_readdata_o(status_s'range) <= status_s;
                         when MODE_DELAY_GEN_ADDR=> avl_readdata_o(31 downto 0) <= (31 downto 5 => '0') & mode_s & (3 downto 2 => '0') & delay_s(delay_s'range);
+                        // TODO marche pas les & & car ils vont se supperoposé, ils doivent être appondu
                         when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_s & char_2_s & char_3_s & char_4_s;
                         when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_s & char_6_s & char_7_s & char_8_s;
                         when CHAR_9_TO_12_ADDR  => avl_readdata_o(31 downto 0) <= char_9_s & char_10_s & char_11_s & char_12_s;
@@ -217,6 +219,7 @@ begin
 
     write_access: process(avl_clk_i, avl_reset_i)
 
+        // TODO pk la variable ?
         variable line_var : line;
         begin
             -- Default values
@@ -230,6 +233,7 @@ begin
                 write(line_var, string'("L'adresse est : "));
                 write(line_var, avl_address_i);  -- Conversion automatique
                 writeline(output, line_var);    -- Affiche dans la console ou le fichier
+                // TODO remise à 0 de cmd_new_char_s car doit être une pulse
                 if avl_write_i = '1' then 
                     case avl_address_i is
                         when LED_ADDR       => leds_s <= avl_writedata_i(leds_s'range);
@@ -245,5 +249,5 @@ begin
             end if;
         end process;
     -- Interface management
-    
+    // TODO affectation des sorites
 end rtl; 
