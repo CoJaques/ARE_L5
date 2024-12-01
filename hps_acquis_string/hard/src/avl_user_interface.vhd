@@ -83,103 +83,47 @@ architecture rtl of avl_user_interface is
     constant USER_ID            : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
     constant BAD_ADDRESS_VAL    : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
     constant USER_ID_ADDR       : std_logic_vector(13 downto 0):= "00" & x"000";
-    constant BTN_ADDR           : std_logic_vector(13 downto 0):= "10" & x"004";
-    constant SWITCH_ADDR        : std_logic_vector(13 downto 0):= "10" & x"008";
-    constant LED_ADDR           : std_logic_vector(13 downto 0):= "10" & x"00C";
-    constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "10" & x"010";
-    constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "10" & x"014";
-    constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "10" & x"020";
-    constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "10" & x"024";
-    constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "10" & x"028";
-    constant CHAR_13_TO_16_ADDR : std_logic_vector(13 downto 0):= "10" & x"02C";
-    constant CHECKSUM_ADDR      : std_logic_vector(13 downto 0):= "10" & x"030";
+    constant BTN_ADDR           : std_logic_vector(13 downto 0):= "00" & x"004";
+    constant SWITCH_ADDR        : std_logic_vector(13 downto 0):= "00" & x"008";
+    constant LED_ADDR           : std_logic_vector(13 downto 0):= "00" & x"00C";
+    constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "00" & x"010";
+    constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "00" & x"014";
+    constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "00" & x"020";
+    constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "00" & x"024";
+    constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "00" & x"028";
+    constant CHAR_13_TO_16_ADDR : std_logic_vector(13 downto 0):= "00" & x"02C";
+    constant CHECKSUM_ADDR      : std_logic_vector(13 downto 0):= "00" & x"030";
 
     --| Signals declarations   |--------------------------------------------------------------   
     -- Inputs signals 
     ---- I/O DE1-SoC
     signal button_s          : std_logic_vector(3 downto 0);
     signal switch_s          : std_logic_vector(9 downto 0);
-    ---- Gen strings
-    signal char_1_s          : std_logic_vector(7 downto 0);
-    signal char_2_s          : std_logic_vector(7 downto 0);
-    signal char_3_s          : std_logic_vector(7 downto 0);
-    signal char_4_s          : std_logic_vector(7 downto 0);
-    signal char_5_s          : std_logic_vector(7 downto 0);
-    signal char_6_s          : std_logic_vector(7 downto 0);
-    signal char_7_s          : std_logic_vector(7 downto 0);
-    signal char_8_s          : std_logic_vector(7 downto 0);
-    signal char_9_s          : std_logic_vector(7 downto 0);
-    signal char_10_s         : std_logic_vector(7 downto 0);
-    signal char_11_s         : std_logic_vector(7 downto 0);
-    signal char_12_s         : std_logic_vector(7 downto 0);
-    signal char_13_s         : std_logic_vector(7 downto 0);
-    signal char_14_s         : std_logic_vector(7 downto 0);
-    signal char_15_s         : std_logic_vector(7 downto 0);
-    signal char_16_s         : std_logic_vector(7 downto 0);
-    signal checksum_s        : std_logic_vector(7 downto 0);
-
 
     -- Outputs signals
     ---- I/O DE1-SoC
     signal leds_s            : std_logic_vector(9 downto 0);
+
     ---- Gen strings
+    signal auto_s            : std_logic;
+    signal delay_s           : std_logic_vector(1 downto 0);
     signal cmd_init_s        : std_logic;
     signal cmd_new_char_s    : std_logic;
-    signal auto_s            : std_logic;
-    signal mode_s            : std_logic;
-    signal delay_s           : std_logic_vector(1 downto 0);
-    signal status_s          : std_logic_vector(1 downto 0);
 
 
 begin
     
     -- sync input part
 
-    // pas besoin de sync les chars
     sync_input_reg: process (avl_clk_i, avl_reset_i)
         begin
             if avl_reset_i = '1' then
                 button_s <= (others => '0');
                 switch_s <= (others => '0');
-                char_1_s <= (others => '0');
-                char_2_s <= (others => '0');
-                char_3_s <= (others => '0');
-                char_4_s <= (others => '0');
-                char_5_s <= (others => '0');
-                char_6_s <= (others => '0');
-                char_7_s <= (others => '0');
-                char_8_s <= (others => '0');
-                char_9_s <= (others => '0');
-                char_10_s <= (others => '0');
-                char_11_s <= (others => '0');
-                char_12_s <= (others => '0');
-                char_13_s <= (others => '0');
-                char_14_s <= (others => '0');
-                char_15_s <= (others => '0');
-                char_16_s <= (others => '0');
-                checksum_s <= (others => '0');
-
             elsif rising_edge(avl_clk_i) then
                 button_s <= button_i;
                 switch_s <= switch_i;
-                char_1_s <= char_1_i;
-                char_2_s <= char_2_i;
-                char_3_s <= char_3_i;
-                char_4_s <= char_4_i;
-                char_5_s <= char_5_i;
-                char_6_s <= char_6_i;
-                char_7_s <= char_7_i;
-                char_8_s <= char_8_i;
-                char_9_s <= char_9_i;
-                char_10_s <= char_10_i;
-                char_11_s <= char_11_i;
-                char_12_s <= char_12_i;
-                char_13_s <= char_13_i;
-                char_14_s <= char_14_i;
-                char_15_s <= char_15_i;
-                char_16_s <= char_16_i;
-                checksum_s <= checksum_i;
-            end if;
+           end if;
         end process;
 
     -- Read access part 
@@ -202,14 +146,13 @@ begin
                         when BTN_ADDR           => avl_readdata_o(button_s'range)<= button_s;
                         when SWITCH_ADDR        => avl_readdata_o(switch_s'range)<= switch_s;
                         when LED_ADDR           => avl_readdata_o(leds_s'range)<= leds_s;
-                        when STATUS_CMD_ADDR        => avl_readdata_o(status_s'range) <= status_s;
-                        when MODE_DELAY_GEN_ADDR=> avl_readdata_o(31 downto 0) <= (31 downto 5 => '0') & mode_s & (3 downto 2 => '0') & delay_s(delay_s'range);
-                        // TODO marche pas les & & car ils vont se supperoposé, ils doivent être appondu
-                        when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_s & char_2_s & char_3_s & char_4_s;
-                        when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_s & char_6_s & char_7_s & char_8_s;
-                        when CHAR_9_TO_12_ADDR  => avl_readdata_o(31 downto 0) <= char_9_s & char_10_s & char_11_s & char_12_s;
-                        when CHAR_13_TO_16_ADDR => avl_readdata_o(31 downto 0) <= char_13_s & char_14_s & char_15_s & char_16_s;
-                        when CHECKSUM_ADDR      => avl_readdata_o(checksum_s'range) <= checksum_s;
+                        when STATUS_CMD_ADDR    => null;
+                        when MODE_DELAY_GEN_ADDR=> avl_readdata_o(31 downto 0) <= (31 downto 5 => '0') & auto_s & (3 downto 2 => '0') & delay_s(delay_s'range);
+                        when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_i & char_2_i & char_3_i & char_4_i;
+                        when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_i & char_6_i & char_7_i & char_8_i;
+                        when CHAR_9_TO_12_ADDR  => avl_readdata_o(31 downto 0) <= char_9_i & char_10_i & char_11_i & char_12_i;
+                        when CHAR_13_TO_16_ADDR => avl_readdata_o(31 downto 0) <= char_13_i & char_14_i & char_15_i & char_16_i;
+                        when CHECKSUM_ADDR      => avl_readdata_o(checksum_i'range) <= checksum_i;
                         when others             => avl_readdata_o <= BAD_ADDRESS_VAL;
                     end case;
                 end if;
@@ -218,22 +161,20 @@ begin
         -- Write access part
 
     write_access: process(avl_clk_i, avl_reset_i)
-
-        // TODO pk la variable ?
+        -- used to debug
         variable line_var : line;
+        -- end of debug
         begin
             -- Default values
             if avl_reset_i = '1' then
                 leds_s <= (others => '0'); 
-                mode_s <= '0';
-                delay_s <= (others => '0');
-                cmd_new_char_s <= '0';
-                cmd_init_s <= '0';
             elsif rising_edge(avl_clk_i) then
+                --used to debug
                 write(line_var, string'("L'adresse est : "));
                 write(line_var, avl_address_i);  -- Conversion automatique
                 writeline(output, line_var);    -- Affiche dans la console ou le fichier
-                // TODO remise à 0 de cmd_new_char_s car doit être une pulse
+                -- end of debug
+                cmd_new_char_s <= '0';
                 if avl_write_i = '1' then 
                     case avl_address_i is
                         when LED_ADDR       => leds_s <= avl_writedata_i(leds_s'range);
@@ -241,13 +182,21 @@ begin
                             cmd_init_s <= avl_writedata_i(0);
                             cmd_new_char_s <= avl_writedata_i(4);
                         when MODE_DELAY_GEN_ADDR =>
-                            delay_s <= avl_writedata_i(1 downto 0);
-                            mode_s <= avl_writedata_i(4);
+                            delay_s <= avl_writedata_i(delay_s'range);
+                            auto_s <= avl_writedata_i(4);
                         when others => null;
                     end case;
                 end if;
             end if;
         end process;
     -- Interface management
-    // TODO affectation des sorites
+
+    -- Output assignment
+    led_o <= leds_s;
+    avl_waitrequest_o <= '0';
+    cmd_init_o <= cmd_init_s;
+    cmd_new_char_o <= cmd_new_char_s;
+    auto_o <= auto_s;
+    delay_o <= delay_s;
+
 end rtl; 
