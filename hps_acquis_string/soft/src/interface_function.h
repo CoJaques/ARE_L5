@@ -7,20 +7,20 @@
  * Reconfigurable Embedded Digital Systems
  *****************************************************************************************
  *
- * File                 : pio_function.h
+ * File                 : function.h
  * Author               : Anthony Convers
  * Date                 : 27.07.2022
  *
  * Context              : ARE lab
  *
  *****************************************************************************************
- * Brief: Header file for avalon
+ * Brief: Header file for base interface
  *
  *****************************************************************************************
  * Modifications :
  * Ver    Date        Student      Comments
  * 0.0    27.07.2022  ACS           Initial version.
- * 1.0    13.10.2024  CJS          Implement lab2.
+ * 1.0    01.12.2024  CJS          Implement lab5.
  *
 *****************************************************************************************/
 #include <stdint.h>

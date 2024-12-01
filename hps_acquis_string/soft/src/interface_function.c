@@ -7,7 +7,7 @@
  * Reconfigurable Embedded Digital Systems
  *****************************************************************************************
  *
- * File                 : pio_function.c
+ * File                 : interface_function.c
  * Author               : Colin Jaques
  * Date                 : 
  *
@@ -19,7 +19,7 @@
  *****************************************************************************************
  * Modifications :
  * Ver    Date        Student      Comments
- * 1.0    13.10.2024  CJS          INITIAL VERSION
+ * 1.0    1.12.2024  CJS          INITIAL VERSION
  *
 *****************************************************************************************/
 #include <stdint.h>
