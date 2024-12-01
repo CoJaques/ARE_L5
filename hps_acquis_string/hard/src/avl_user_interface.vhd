@@ -80,7 +80,43 @@ architecture rtl of avl_user_interface is
     
     constant USER_ID          : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
     constant BAD_ADDRESS_VAL  : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
+    constant BTN_ADDR         : std_logic_vector(13 downto 0):= "00" & x"001";
+    constant SWITCH_ADDR      : std_logic_vector(13 downto 0):= "00" & x"002";
+    constant LED_ADDR         : std_logic_vector(13 downto 0):= "00" & x"003";
     --| Signals declarations   |--------------------------------------------------------------   
+    -- Inputs signals 
+    ---- I/O DE1-SoC
+    signal button_s          : std_logic_vector(3 downto 0);
+    signal switch_s          : std_logic_vector(9 downto 0);
+    ---- Gen strings
+    signal char_1_s          : std_logic_vector(7 downto 0);
+    signal char_2_s          : std_logic_vector(7 downto 0);
+    signal char_3_s          : std_logic_vector(7 downto 0);
+    signal char_4_s          : std_logic_vector(7 downto 0);
+    signal char_5_s          : std_logic_vector(7 downto 0);
+    signal char_6_s          : std_logic_vector(7 downto 0);
+    signal char_7_s          : std_logic_vector(7 downto 0);
+    signal char_8_s          : std_logic_vector(7 downto 0);
+    signal char_9_s          : std_logic_vector(7 downto 0);
+    signal char_10_s         : std_logic_vector(7 downto 0);
+    signal char_11_s         : std_logic_vector(7 downto 0);
+    signal char_12_s         : std_logic_vector(7 downto 0);
+    signal char_13_s         : std_logic_vector(7 downto 0);
+    signal char_14_s         : std_logic_vector(7 downto 0);
+    signal char_15_s         : std_logic_vector(7 downto 0);
+    signal char_16_s         : std_logic_vector(7 downto 0);
+    signal checksum_s        : std_logic_vector(7 downto 0);
+
+
+    -- Outputs signals
+    ---- I/O DE1-SoC
+    signal leds_s            : std_logic_vector(9 downto 0);
+    ---- Gen strings
+    signal cmd_init_s        : std_logic;
+    signal cmd_new_char_s    : std_logic;
+    signal auto_s            : std_logic;
+    signal delay_s           : std_logic_vector(1 downto 0);
+
 
 begin
     
