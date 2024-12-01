@@ -78,11 +78,19 @@ architecture rtl of avl_user_interface is
     
     --| Constants declarations |--------------------------------------------------------------
     
-    constant USER_ID          : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
-    constant BAD_ADDRESS_VAL  : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
-    constant BTN_ADDR         : std_logic_vector(13 downto 0):= "00" & x"001";
-    constant SWITCH_ADDR      : std_logic_vector(13 downto 0):= "00" & x"002";
-    constant LED_ADDR         : std_logic_vector(13 downto 0):= "00" & x"003";
+    constant USER_ID            : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
+    constant BAD_ADDRESS_VAL    : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
+    constant BTN_ADDR           : std_logic_vector(15 downto 0):= x"0004";
+    constant SWITCH_ADDR        : std_logic_vector(15 downto 0):= x"0008";
+    constant LED_ADDR           : std_logic_vector(15 downto 0):= x"000C";
+    constant STATUS_ADDR        : std_logic_vector(15 downto 0):= x"0010";
+    constant MODE_GEN_ADDR      : std_logic_vector(15 downto 0):= x"0014";
+    constant DELAY_GEN_ADDR     : std_logic_vector(15 downto 0):= x"0014";
+    constant CHAR_1_TO_4_ADDR   : std_logic_vector(15 downto 0):= x"0020";
+    constant CHAR_5_TO_8_ADDR   : std_logic_vector(15 downto 0):= x"0024";
+    constant CHAR_9_TO_12_ADDR  : std_logic_vector(15 downto 0):= x"0028";
+    constant CHAR_13_TO_16_ADDR : std_logic_vector(15 downto 0):= x"002C";
+    constant CHECKSUM_ADDR      : std_logic_vector(15 downto 0):= x"0030";
     --| Signals declarations   |--------------------------------------------------------------   
     -- Inputs signals 
     ---- I/O DE1-SoC
@@ -117,10 +125,56 @@ architecture rtl of avl_user_interface is
     signal auto_s            : std_logic;
     signal delay_s           : std_logic_vector(1 downto 0);
 
-
 begin
     
     -- Read access part
+
+    sync_input_reg: process (avl_clk_i, avl_reset_i)
+        begin
+            if avl_reset_i = '1' then
+                button_s <= (others => '0');
+                switch_s <= (others => '0');
+                char_1_s <= (others => '0');
+                char_2_s <= (others => '0');
+                char_3_s <= (others => '0');
+                char_4_s <= (others => '0');
+                char_5_s <= (others => '0');
+                char_6_s <= (others => '0');
+                char_7_s <= (others => '0');
+                char_8_s <= (others => '0');
+                char_9_s <= (others => '0');
+                char_10_s <= (others => '0');
+                char_11_s <= (others => '0');
+                char_12_s <= (others => '0');
+                char_13_s <= (others => '0');
+                char_14_s <= (others => '0');
+                char_15_s <= (others => '0');
+                char_16_s <= (others => '0');
+                checksum_s <= (others => '0');
+
+            elsif rising_edge(avl_clk_i) then
+                button_s <= button_i;
+                switch_s <= switch_i;
+                char_1_s <= char_1_i;
+                char_2_s <= char_2_i;
+                char_3_s <= char_3_i;
+                char_4_s <= char_4_i;
+                char_5_s <= char_5_i;
+                char_6_s <= char_6_i;
+                char_7_s <= char_7_i;
+                char_8_s <= char_8_i;
+                char_9_s <= char_9_i;
+                char_10_s <= char_10_i;
+                char_11_s <= char_11_i;
+                char_12_s <= char_12_i;
+                char_13_s <= char_13_i;
+                char_14_s <= char_14_i;
+                char_15_s <= char_15_i;
+                char_16_s <= char_16_i;
+                checksum_s <= checksum_i;
+            end if;
+        end process;
+
     
     -- Write access part
     
