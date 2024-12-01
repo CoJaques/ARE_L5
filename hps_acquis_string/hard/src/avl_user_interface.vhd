@@ -80,20 +80,17 @@ architecture rtl of avl_user_interface is
     
     constant USER_ID            : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
     constant BAD_ADDRESS_VAL    : std_logic_vector(avl_readdata_o'range):= x"deadbeef";
-    constant USER_ID_ADDR       : std_logic_vector(15 downto 0):= x"0000";
-    constant BTN_ADDR           : std_logic_vector(15 downto 0):= x"0004";
-    constant SWITCH_ADDR        : std_logic_vector(15 downto 0):= x"0008";
-    constant LED_ADDR           : std_logic_vector(15 downto 0):= x"000C";
-    constant STATUS_ADDR        : std_logic_vector(15 downto 0):= x"0010";
-    constant CMD_INIT_ADDR      : std_logic_vector(15 downto 0):= x"0010";
-    constant CMD_NEW_CHAR_ADDR  : std_logic_vector(15 downto 0):= x"0010";
-    constant MODE_GEN_ADDR      : std_logic_vector(15 downto 0):= x"0014";
-    constant DELAY_GEN_ADDR     : std_logic_vector(15 downto 0):= x"0014";
-    constant CHAR_1_TO_4_ADDR   : std_logic_vector(15 downto 0):= x"0020";
-    constant CHAR_5_TO_8_ADDR   : std_logic_vector(15 downto 0):= x"0024";
-    constant CHAR_9_TO_12_ADDR  : std_logic_vector(15 downto 0):= x"0028";
-    constant CHAR_13_TO_16_ADDR : std_logic_vector(15 downto 0):= x"002C";
-    constant CHECKSUM_ADDR      : std_logic_vector(15 downto 0):= x"0030";
+    constant USER_ID_ADDR       : std_logic_vector(13 downto 0):= "00" & x"000";
+    constant BTN_ADDR           : std_logic_vector(13 downto 0):= "00" & x"004";
+    constant SWITCH_ADDR        : std_logic_vector(13 downto 0):= "00" & x"008";
+    constant LED_ADDR           : std_logic_vector(13 downto 0):= "00" & x"00C";
+    constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "00" & x"010";
+    constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "00" & x"014";
+    constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "00" & x"020";
+    constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "00" & x"024";
+    constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "00" & x"028";
+    constant CHAR_13_TO_16_ADDR : std_logic_vector(13 downto 0):= "00" & x"02C";
+    constant CHECKSUM_ADDR      : std_logic_vector(13 downto 0):= "00" & x"030";
 
     --| Signals declarations   |--------------------------------------------------------------   
     -- Inputs signals 
@@ -198,9 +195,8 @@ begin
                         when BTN_ADDR           => avl_readdata_o(button_s'range)<= button_s;
                         when SWITCH_ADDR        => avl_readdata_o(switch_s'range)<= switch_s;
                         when LED_ADDR           => avl_readdata_o(leds_s'range)<= leds_s;
-                        when STATUS_ADDR        => avl_readdata_o(status_s'range) <= status_s;
-                        when MODE_GEN_ADDR      => avl_readdata_o(0) <= mode_s;
-                        when DELAY_GEN_ADDR     => avl_readdata_o(delay_s'range) <= delay_s;
+                        when STATUS_CMD_ADDR        => avl_readdata_o(status_s'range) <= status_s;
+                        when MODE_DELAY_GEN_ADDR=> avl_readdata_o(31 downto 0) <= (31 downto 5 => '0') & mode_s & (3 downto 2 => '0') & delay_s(delay_s'range);
                         when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_s & char_2_s & char_3_s & char_4_s;
                         when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_s & char_6_s & char_7_s & char_8_s;
                         when CHAR_9_TO_12_ADDR  => avl_readdata_o(31 downto 0) <= char_9_s & char_10_s & char_11_s & char_12_s;
@@ -226,10 +222,12 @@ begin
                 if avl_write_i = '1' then 
                     case avl_address_i is
                         when LED_ADDR       => leds_s <= avl_writedata_i(leds_s'range);
-                        when CMD_INIT_ADDR  => cmd_init_s <= avl_writedata_i(0);
-                        when CMD_NEW_CHAR_ADDR => cmd_new_char_s <= avl_writedata_i(0);
-                        when MODE_GEN_ADDR  => mode_s <= avl_writedata_i(0);
-                        when DELAY_GEN_ADDR => delay_s <= avl_writedata_i(delay_s'range);  
+                        when STATUS_CMD_ADDR  => 
+                            cmd_init_s <= avl_writedata_i(0);
+                            cmd_new_char_s <= avl_writedata_i(4);
+                        when MODE_DELAY_GEN_ADDR =>
+                            delay_s <= avl_writedata_i(1 downto 0);
+                            mode_s <= avl_writedata_i(4);
                         when others => null;
                     end case;
                 end if;
