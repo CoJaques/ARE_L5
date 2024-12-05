@@ -28,12 +28,10 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "interface_function.h"
 
-//***********************************//
-//******* Address and Offsets ******//
-
-// Base address for char generator on AXI lightweight bus
-#define CHAR_GEN_BASE_ADDR   0x010000
+// Pseudo-macro to simplify register access
+#define CHAR_GEN_REG(_x_) (*(volatile uint32_t *)(CHAR_GEN_BASE_ADDR + (_x_)))
 
 // Register offsets for char generator functionalities
 #define CHAR_GEN_INIT_OFFSET 0x10 // Command to initialize the generator

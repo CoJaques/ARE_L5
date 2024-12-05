@@ -31,6 +31,8 @@
 #include "char_gen.h"
 #include "interface_function.h"
 
+int __auto_semihosting;
+
 #define NUM_KEYS 4 // Number of keys on the board
 
 /**
@@ -64,6 +66,7 @@ void calculate_integrity_bulk()
 {
 	uint8_t checksum = get_checksum(); // Retrieve the checksum value
 	uint32_t sum = 0;
+	uint32_t checksum_computed = 0;
 	char str[17] = { 0 }; // Buffer to hold the full 16-character string
 
 	// Read characters in groups of 4
@@ -80,12 +83,12 @@ void calculate_integrity_bulk()
 	}
 
 	// Add the checksum to the sum and apply modulo 256
-	sum = (sum + checksum) % 256;
+	 checksum_computed = (sum + checksum) % 256;
 
 	// Check if the integrity is valid
-	if (sum == 0) {
+	if (checksum_computed == 0) {
 		printf("OK: checksum: 0x%02X, calculated: 0x%02X, string: %s\n",
-		       checksum, sum, str);
+		       checksum, sum % 256, str);
 	} else {
 		static uint32_t error_count = 0; // Persistent error counter
 		error_count++;
@@ -102,7 +105,7 @@ int main(void)
 	// Display the design constants
 	printf("Constant AXI ID: 0x%08lX\n", (unsigned long)CONST_ID);
 	printf("Constant Avalon ID: 0x%08lX\n",
-	       (unsigned long)CHAR_GEN_BASE_ADDR);
+	       (unsigned long)INTERFACE_ID);
 
 	// Initialize the LEDs to OFF
 	Leds_write(0);

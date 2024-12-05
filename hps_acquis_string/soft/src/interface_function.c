@@ -47,6 +47,11 @@ void Leds_toggle(uint32_t maskleds)
 	LED_REG ^= (maskleds)&LED_MASK;
 }
 
+void Leds_write(uint32_t maskleds)
+{
+	LED_REG = maskleds & LED_MASK;
+}
+
 bool Key_read(int key_number)
 {
 	return !(BUTTON_REG & (1 << key_number));

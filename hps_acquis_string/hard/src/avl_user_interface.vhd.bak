@@ -131,11 +131,15 @@ begin
     -- Read access part 
         
     read_access: process(avl_clk_i, avl_reset_i)
+        variable line_var : line;
         begin
             if avl_reset_i = '1' then
                 avl_readdata_o <= (others => '0');
                 avl_readdatavalid_o <= '0';
             elsif rising_edge(avl_clk_i) then
+                write(line_var, string'("L'adresse est : "));
+                write(line_var, avl_address_i);  -- Conversion automatique
+                writeline(output, line_var);    -- Affiche dans la console ou le fichier
                 avl_readdatavalid_o <= avl_read_i;
                 if avl_read_i = '1' then 
                     avl_readdata_o <= (others => '0');
@@ -159,11 +163,19 @@ begin
         -- Write access part
 
     write_access: process(avl_clk_i, avl_reset_i)
+        -- used to debug
+        variable line_var : line;
+        -- end of debug
         begin
             -- Default values
             if avl_reset_i = '1' then
                 leds_s <= (others => '0'); 
             elsif rising_edge(avl_clk_i) then
+                --used to debug
+                write(line_var, string'("L'adresse est : "));
+                write(line_var, avl_address_i);  -- Conversion automatique
+                writeline(output, line_var);    -- Affiche dans la console ou le fichier
+                -- end of debug
                 cmd_new_char_s <= '0';
                 if avl_write_i = '1' then 
                     case avl_address_i is
