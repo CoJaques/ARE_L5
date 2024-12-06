@@ -88,8 +88,8 @@ architecture rtl of avl_user_interface is
     constant LED_ADDR           : std_logic_vector(13 downto 0):= "00" & x"003";
     constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "00" & x"004";
     constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "00" & x"005";
-    constant SECURE_MODE        : std_logic_vector(13 downto 0):= "00" & x"006";
-    constant RESERVED_2_ADDR    : std_logic_vector(13 downto 0):= "00" & x"007";
+    constant LOCK_ADDR          : std_logic_vector(13 downto 0):= "00" & x"006";
+    constant SECURE_MODE_ADDR   : std_logic_vector(13 downto 0):= "00" & x"007";
     constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "00" & x"008";
     constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "00" & x"009";
     constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "00" & x"00A";
@@ -129,8 +129,9 @@ architecture rtl of avl_user_interface is
     signal cmd_init_s        : std_logic;
     signal cmd_new_char_s    : std_logic;
 
-    signal status_s    :   std_logic_vector(1 downto 0);
-    signal lock_s      :   std_logic;
+    signal snapshot_s    :   std_logic;
+    signal lock_s        :   std_logic;
+    signal secure_mode_s :   std_logic;
 
 begin
     
@@ -141,10 +142,12 @@ begin
             if avl_reset_i = '1' then
                 button_s <= (others => '0');
                 switch_s <= (others => '0');
+                lock_s <= '0';
+                secure_mode_s <= '0';
             elsif rising_edge(avl_clk_i) then
                 button_s <= button_i;
                 switch_s <= switch_i;
-                if lock_s = '0' then
+                if lock_s = '0' or secure_mode_s = '0' then
                     char_1_s <= char_1_i;
                     char_2_s <= char_2_i;
                     char_3_s <= char_3_i;
@@ -182,12 +185,12 @@ begin
                         when BTN_ADDR           => avl_readdata_o(button_s'range)<= button_s;
                         when SWITCH_ADDR        => avl_readdata_o(switch_s'range)<= switch_s;
                         when LED_ADDR           => avl_readdata_o(leds_s'range)<= leds_s;
-                        when STATUS_CMD_ADDR    => avl_readdata_o(1 downto 0) <= status_s;
+                        when STATUS_CMD_ADDR    => avl_readdata_o(1 downto 0) <= snapshot_s & '1';
                         when MODE_DELAY_GEN_ADDR=> avl_readdata_o(31 downto 0) <= (31 downto 5 => '0') & auto_s & (3 downto 2 => '0') & delay_s(delay_s'range);
-                        when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_i & char_2_i & char_3_i & char_4_i;
-                        when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_i & char_6_i & char_7_i & char_8_i;
-                        when CHAR_9_TO_12_ADDR  => avl_readdata_o(31 downto 0) <= char_9_i & char_10_i & char_11_i & char_12_i;
-                        when CHAR_13_TO_16_ADDR => avl_readdata_o(31 downto 0) <= char_13_i & char_14_i & char_15_i & char_16_i;
+                        when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_s & char_2_s & char_3_s & char_4_s;
+                        when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_s & char_6_s & char_7_s & char_8_s;
+                        when CHAR_9_TO_12_ADDR  => avl_readdata_o(31 downto 0) <= char_9_s & char_10_s & char_11_s & char_12_s;
+                        when CHAR_13_TO_16_ADDR => avl_readdata_o(31 downto 0) <= char_13_s & char_14_s & char_15_s & char_16_s;
                         when CHECKSUM_ADDR      => avl_readdata_o(checksum_i'range) <= checksum_i;
                         when others             => avl_readdata_o <= BAD_ADDRESS_VAL;
                     end case;
@@ -212,14 +215,27 @@ begin
                         when MODE_DELAY_GEN_ADDR =>
                             delay_s <= avl_writedata_i(delay_s'range);
                             auto_s <= avl_writedata_i(4);
-                        when SECURE_MODE =>
-                            status_s(1) <= avl_writedata_i(0);
+                        when LOCK_ADDR =>
+                            lock_s <= avl_writedata_i(0);
+                        when SECURE_MODE_ADDR =>
+                            secure_mode_s <= avl_writedata_i(0);
                         when others => null;
                     end case;
                 end if;
             end if;
         end process;
-    -- Interface management
+
+    -- M&m's
+    snapshot_state : process (avl_clk_i, avl_reset_i) is
+        begin
+            if avl_reset_i = '1' then
+                snapshot_s <= '0';
+            elsif rising_edge(avl_clk_i) then
+                snapshot_s <= lock_s and secure_mode_s;
+            end if;
+        end process snapshot_state;
+        
+    
 
     -- Output assignment
     led_o <= leds_s;
