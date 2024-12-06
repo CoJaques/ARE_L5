@@ -31,7 +31,7 @@
 #include "interface_function.h"
 
 // Pseudo-macro to simplify register access
-#define CHAR_GEN_REG(_x_) (*(volatile uint32_t *)(CHAR_GEN_BASE_ADDR + (_x_)))
+#define CHAR_GEN_REG(_x_)    (*(volatile uint32_t *)(CHAR_GEN_BASE_ADDR + (_x_)))
 
 // Register offsets for char generator functionalities
 #define CHAR_GEN_INIT_OFFSET 0x10 // Command to initialize the generator
@@ -47,12 +47,18 @@
 #define CHAR_GEN_CHAR_GROUP_4  0x2C // Read characters 13-16
 #define CHAR_GEN_CHECKSUM_OFFSET \
 	0x30 // Read checksum of the 16-character string
+//
+//Register used to lock the update of string from the fpga
+#define CHAR_GEN_LOCK_READ_OFFSET 0x18
+
+//Register used to define if safe mode is enabled
+#define CHAR_GEN_SAFE_MODE	  0x1C
 
 // Masks for specific bit operations
-#define INIT_MASK     0x01 // Mask for initialization command
-#define NEW_CHAR_MASK 0x10 // Mask for generating new characters
-#define MODE_MASK     0x10 // Mask for generation mode (manual/auto)
-#define DELAY_MASK    0x03 // Mask for generation delay (2 bits)
+#define INIT_MASK		  0x01 // Mask for initialization command
+#define NEW_CHAR_MASK		  0x10 // Mask for generating new characters
+#define MODE_MASK		  0x10 // Mask for generation mode (manual/auto)
+#define DELAY_MASK		  0x03 // Mask for generation delay (2 bits)
 
 //***********************************//
 //******** Function Prototypes ******//
@@ -132,4 +138,19 @@ uint32_t get_4_char(uint8_t chargroup_n);
  * @return uint8_t The checksum value.
  */
 uint8_t get_checksum(void);
+
+/**
+ * @brief Lock the update of the string from the fpga
+ * @param safe 1 to lock, 0 to unlock
+ * @return None
+ */
+void set_safe_mode(uint8_t safe);
+
+/**
+ * @brief Reads characters in bulk (4 at a time), calculates the integrity, 
+ *        and displays the result.
+ * @param mode The generation mode to use (0: unsafe, 1: safe).
+ */
+void calculate_integrity_bulk(uint8_t mode);
+
 #endif // CHAR_GEN_H
