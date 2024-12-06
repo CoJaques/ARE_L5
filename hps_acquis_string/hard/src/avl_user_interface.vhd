@@ -88,7 +88,7 @@ architecture rtl of avl_user_interface is
     constant LED_ADDR           : std_logic_vector(13 downto 0):= "00" & x"003";
     constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "00" & x"004";
     constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "00" & x"005";
-    constant RESERVED_1_ADDR    : std_logic_vector(13 downto 0):= "00" & x"006";
+    constant SECURE_MODE        : std_logic_vector(13 downto 0):= "00" & x"006";
     constant RESERVED_2_ADDR    : std_logic_vector(13 downto 0):= "00" & x"007";
     constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "00" & x"008";
     constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "00" & x"009";
@@ -107,11 +107,30 @@ architecture rtl of avl_user_interface is
     signal leds_s            : std_logic_vector(9 downto 0);
 
     ---- Gen strings
+    signal char_1_s    :   std_logic_vector(7 downto 0);
+    signal char_2_s    :   std_logic_vector(7 downto 0);
+    signal char_3_s    :   std_logic_vector(7 downto 0);
+    signal char_4_s    :   std_logic_vector(7 downto 0);
+    signal char_5_s    :   std_logic_vector(7 downto 0);
+    signal char_6_s    :   std_logic_vector(7 downto 0);
+    signal char_7_s    :   std_logic_vector(7 downto 0);
+    signal char_8_s    :   std_logic_vector(7 downto 0);
+    signal char_9_s    :   std_logic_vector(7 downto 0);
+    signal char_10_s   :   std_logic_vector(7 downto 0);
+    signal char_11_s   :   std_logic_vector(7 downto 0);
+    signal char_12_s   :   std_logic_vector(7 downto 0);
+    signal char_13_s   :   std_logic_vector(7 downto 0);
+    signal char_14_s   :   std_logic_vector(7 downto 0);
+    signal char_15_s   :   std_logic_vector(7 downto 0);
+    signal char_16_s   :   std_logic_vector(7 downto 0);
+    signal checksum_s  :   std_logic_vector(7 downto 0);
     signal auto_s            : std_logic;
     signal delay_s           : std_logic_vector(1 downto 0);
     signal cmd_init_s        : std_logic;
     signal cmd_new_char_s    : std_logic;
 
+    signal status_s    :   std_logic_vector(1 downto 0);
+    signal lock_s      :   std_logic;
 
 begin
     
@@ -125,6 +144,25 @@ begin
             elsif rising_edge(avl_clk_i) then
                 button_s <= button_i;
                 switch_s <= switch_i;
+                if lock_s = '0' then
+                    char_1_s <= char_1_i;
+                    char_2_s <= char_2_i;
+                    char_3_s <= char_3_i;
+                    char_4_s <= char_4_i;
+                    char_5_s <= char_5_i;
+                    char_6_s <= char_6_i;
+                    char_7_s <= char_7_i;
+                    char_8_s <= char_8_i;
+                    char_9_s <= char_9_i;
+                    char_10_s <= char_10_i;
+                    char_11_s <= char_11_i;
+                    char_12_s <= char_12_i;
+                    char_13_s <= char_13_i;
+                    char_14_s <= char_14_i;
+                    char_15_s <= char_15_i;
+                    char_16_s <= char_16_i;
+                    checksum_s <= checksum_i;
+                end if;
            end if;
         end process;
 
@@ -144,7 +182,7 @@ begin
                         when BTN_ADDR           => avl_readdata_o(button_s'range)<= button_s;
                         when SWITCH_ADDR        => avl_readdata_o(switch_s'range)<= switch_s;
                         when LED_ADDR           => avl_readdata_o(leds_s'range)<= leds_s;
-                        when STATUS_CMD_ADDR    => null;
+                        when STATUS_CMD_ADDR    => avl_readdata_o(1 downto 0) <= status_s;
                         when MODE_DELAY_GEN_ADDR=> avl_readdata_o(31 downto 0) <= (31 downto 5 => '0') & auto_s & (3 downto 2 => '0') & delay_s(delay_s'range);
                         when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_i & char_2_i & char_3_i & char_4_i;
                         when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_i & char_6_i & char_7_i & char_8_i;
@@ -174,6 +212,8 @@ begin
                         when MODE_DELAY_GEN_ADDR =>
                             delay_s <= avl_writedata_i(delay_s'range);
                             auto_s <= avl_writedata_i(4);
+                        when SECURE_MODE =>
+                            status_s(1) <= avl_writedata_i(0);
                         when others => null;
                     end case;
                 end if;
