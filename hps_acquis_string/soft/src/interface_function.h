@@ -38,7 +38,7 @@
 #define BUTTON_REG	   INTERFACE_REG(0x4)
 #define SWITCH_REG	   INTERFACE_REG(0x8)
 #define LED_REG		   INTERFACE_REG(0xC)
-#define LED_MASK	   0x2FF
+#define LED_MASK	   0x3FF
 
 #define NUM_KEYS	   4
 #define KEY_0		   0
