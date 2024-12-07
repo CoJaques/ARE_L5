@@ -31,6 +31,7 @@ void generator_init(void)
 {
 	INTERFACE_REG(CHAR_GEN_INIT_OFFSET) |= INIT_MASK; // Set the init bit
 	INTERFACE_REG(CHAR_GEN_INIT_OFFSET) &= ~INIT_MASK; // Clear the init bit
+	INTERFACE_REG(CHAR_GEN_LOCK_READ_OFFSET) = 0;
 }
 
 void generator_change_mode(int mode)
@@ -93,9 +94,11 @@ uint8_t get_checksum(void)
 void set_safe_mode(uint8_t safe)
 {
 	if (safe) {
-		INTERFACE_REG(CHAR_GEN_LOCK_READ_OFFSET) = 1;
+		printf("Set mode safe\n");
+		INTERFACE_REG(CHAR_GEN_SAFE_MODE) = 1;
 	} else {
-		INTERFACE_REG(CHAR_GEN_LOCK_READ_OFFSET) = 0;
+		printf("Set mode unsafe\n");
+		INTERFACE_REG(CHAR_GEN_SAFE_MODE) = 0;
 	}
 }
 

@@ -59,7 +59,7 @@ architecture Behavioral of avalon_console_sim is
             char_16_i           : in  std_logic_vector(7 downto 0);
             checksum_i          : in  std_logic_vector(7 downto 0);
             cmd_init_o          : out std_logic;
-            cmd_new_char_o       : out std_logic;
+            cmd_new_char_o      : out std_logic;
             auto_o              : out std_logic;
             delay_o             : out std_logic_vector(1 downto 0)
         );
@@ -130,7 +130,7 @@ architecture Behavioral of avalon_console_sim is
     signal char_16_sti         : std_logic_vector(7 downto 0);
     signal checksum_sti        : std_logic_vector(7 downto 0);
     signal cmd_init_obs        : std_logic;
-    signal cmd_new_nbr_obs     : std_logic;
+    signal cmd_new_char_obs    : std_logic;
     signal auto_obs            : std_logic;
     signal delay_obs           : std_logic_vector(1 downto 0);
 
@@ -173,7 +173,7 @@ begin
             char_16_i           => char_16_sti,
             checksum_i          => checksum_sti,
             cmd_init_o          => cmd_init_obs,
-            cmd_new_char_o       => cmd_new_nbr_obs,
+            cmd_new_char_o      => cmd_new_char_obs,
             auto_o              => auto_obs,
             delay_o             => delay_obs
         );
@@ -185,7 +185,7 @@ begin
             clock_i       => clock_sti,
             reset_i       => reset_sti,
             cmd_init_i    => cmd_init_obs,
-            cmd_new_char_i => cmd_new_nbr_obs,
+            cmd_new_char_i => cmd_new_char_obs,
             auto_i        => auto_obs,
             delay_i       => delay_obs,
             char_1_o      => char_1_sti,

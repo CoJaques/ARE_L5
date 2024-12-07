@@ -142,8 +142,6 @@ begin
             if avl_reset_i = '1' then
                 button_s <= (others => '0');
                 switch_s <= (others => '0');
-                lock_s <= '0';
-                secure_mode_s <= '0';
             elsif rising_edge(avl_clk_i) then
                 button_s <= button_i;
                 switch_s <= switch_i;
@@ -204,6 +202,8 @@ begin
             -- Default values
             if avl_reset_i = '1' then
                 leds_s <= (others => '0'); 
+					 lock_s <= '0';
+                secure_mode_s <= '0';
             elsif rising_edge(avl_clk_i) then
                 cmd_new_char_s <= '0';
                 if avl_write_i = '1' then 

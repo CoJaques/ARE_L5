@@ -74,7 +74,7 @@ int main(void)
 	uint32_t old_switches =
 		0xFFFFFFFF; // Previous state of the switches (forced to update at startup)
 
-	uint8_t safe_mode = 0; // Safe mode state
+	set_safe_mode(0);
 
 	while (1) {
 		// Read the current state of switches
@@ -101,11 +101,6 @@ int main(void)
 			}
 		}
 
-		// While KEY2 is active: Calculate integrity continuously
-		if (keys_state[KEY_2]) {
-			calculate_integrity_bulk(safe_mode);
-		}
-
 		// Update the generator mode if SW7 state has changed
 		if ((switches & (1 << 7)) != (old_switches & (1 << 7))) {
 			generator_change_mode((switches >> 7) & 0x1);
@@ -119,7 +114,11 @@ int main(void)
 		// Update the safe mode if SW0 state has changed
 		if ((switches & 1) != (old_switches & 1)) {
 			set_safe_mode(switches & 1);
-			safe_mode = switches & 1;
+		}
+
+		// While KEY2 is active: Calculate integrity continuously
+		if (keys_state[KEY_2]) {
+			calculate_integrity_bulk(switches & 1);
 		}
 
 		// Update the previous state of keys and switches
