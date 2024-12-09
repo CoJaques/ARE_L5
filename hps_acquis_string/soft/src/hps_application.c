@@ -34,6 +34,9 @@
 int __auto_semihosting;
 
 #define NUM_KEYS 4 // Number of keys on the board
+#define SWITCH_SAFE_MODE (1 << 0) // Switch to enable safe mode
+#define SWITCH_GEN_MODE (1 << 7) // Switch to change generation mode
+#define SWITCHS_GEN_SPEED (3 << 8) // Switch to change generation speed
 
 /**
  * @brief Reads the current state of all keys.
@@ -102,23 +105,26 @@ int main(void)
 		}
 
 		// Update the generator mode if SW7 state has changed
-		if ((switches & (1 << 7)) != (old_switches & (1 << 7))) {
+		if ((switches & SWITCH_GEN_MODE) !=
+		    (old_switches & SWITCH_GEN_MODE)) {
 			generator_change_mode((switches >> 7) & 0x1);
 		}
 
 		// Update the generation speed if SW9-8 state has changed
-		if ((switches & (3 << 8)) != (old_switches & (3 << 8))) {
+		if ((switches & SWITCHS_GEN_SPEED) !=
+		    (old_switches & SWITCHS_GEN_SPEED)) {
 			generator_change_speed((switches >> 8) & 0x3);
 		}
 
 		// Update the safe mode if SW0 state has changed
-		if ((switches & 1) != (old_switches & 1)) {
-			set_safe_mode(switches & 1);
+		if ((switches & SWITCH_SAFE_MODE) !=
+		    (old_switches & SWITCH_SAFE_MODE)) {
+			set_safe_mode(switches & SWITCH_SAFE_MODE);
 		}
 
 		// While KEY2 is active: Calculate integrity continuously
 		if (keys_state[KEY_2]) {
-			calculate_integrity_bulk(switches & 1);
+			calculate_integrity_bulk(switches & SWITCH_SAFE_MODE);
 		}
 
 		// Update the previous state of keys and switches
