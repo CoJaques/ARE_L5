@@ -54,7 +54,7 @@ void read_keys(bool *keys_state)
  * @param keys_state Array containing the current state of the keys.
  * @param keys_state_old Array to store the old state of the keys.
  */
-void update_old_keys(bool *keys_state, bool *keys_state_old)
+void update_previous_keys(bool *keys_state, bool *keys_state_old)
 {
 	for (int i = 0; i < NUM_KEYS; i++) {
 		keys_state_old[i] = keys_state[i];
@@ -63,7 +63,10 @@ void update_old_keys(bool *keys_state, bool *keys_state_old)
 
 int main(void)
 {
-	printf("Laboratoire: Conception d'une interface fiable\n");
+	uint32_t switches; // Current state of switches
+	uint32_t previous_switches; // Previous state of switches
+	bool keys_state[NUM_KEYS] = { false }; // Current state of the keys
+	bool keys_state_old[NUM_KEYS] = { false }; // Previous state of the keys
 
 	// Display the design constants
 	printf("Constant AXI ID: 0x%08lX\n", (unsigned long)CONST_ID);
@@ -72,20 +75,23 @@ int main(void)
 	// Initialize the LEDs to OFF
 	Leds_write(0);
 
-	bool keys_state[NUM_KEYS] = { false }; // Current state of the keys
-	bool keys_state_old[NUM_KEYS] = { false }; // Previous state of the keys
-	uint32_t old_switches =
-		0xFFFFFFFF; // Previous state of the switches (forced to update at startup)
-
-	set_safe_mode(0);
+	// Initialize the switches
+	switches = Switchs_read();
+	previous_switches = ~switches;
 
 	while (1) {
 		// Read the current state of switches
-		uint32_t switches = Switchs_read();
+		switches = Switchs_read();
 		read_keys(keys_state);
 
+		// Update the safe mode if SW0 state has changed
+		if ((switches & SWITCH_SAFE_MODE) !=
+		    (previous_switches & SWITCH_SAFE_MODE)) {
+			set_safe_mode(switches & SWITCH_SAFE_MODE);
+		}
+
 		// Update the LEDs based on the switches only if their state has changed
-		if (switches != old_switches) {
+		if (switches != previous_switches) {
 			Leds_write(switches & LED_MASK);
 		}
 
@@ -106,20 +112,14 @@ int main(void)
 
 		// Update the generator mode if SW7 state has changed
 		if ((switches & SWITCH_GEN_MODE) !=
-		    (old_switches & SWITCH_GEN_MODE)) {
+		    (previous_switches & SWITCH_GEN_MODE)) {
 			generator_change_mode((switches >> 7) & 0x1);
 		}
 
 		// Update the generation speed if SW9-8 state has changed
 		if ((switches & SWITCHS_GEN_SPEED) !=
-		    (old_switches & SWITCHS_GEN_SPEED)) {
+		    (previous_switches & SWITCHS_GEN_SPEED)) {
 			generator_change_speed((switches >> 8) & 0x3);
-		}
-
-		// Update the safe mode if SW0 state has changed
-		if ((switches & SWITCH_SAFE_MODE) !=
-		    (old_switches & SWITCH_SAFE_MODE)) {
-			set_safe_mode(switches & SWITCH_SAFE_MODE);
 		}
 
 		// While KEY2 is active: Calculate integrity continuously
@@ -128,8 +128,8 @@ int main(void)
 		}
 
 		// Update the previous state of keys and switches
-		update_old_keys(keys_state, keys_state_old);
-		old_switches = switches;
+		update_previous_keys(keys_state, keys_state_old);
+		previous_switches = switches;
 	}
 
 	return 0;
