@@ -189,7 +189,7 @@ begin
                         when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_s & char_6_s & char_7_s & char_8_s;
                         when CHAR_9_TO_12_ADDR  => avl_readdata_o(31 downto 0) <= char_9_s & char_10_s & char_11_s & char_12_s;
                         when CHAR_13_TO_16_ADDR => avl_readdata_o(31 downto 0) <= char_13_s & char_14_s & char_15_s & char_16_s;
-                        when CHECKSUM_ADDR      => avl_readdata_o(checksum_i'range) <= checksum_i;
+                        when CHECKSUM_ADDR      => avl_readdata_o(checksum_s'range) <= checksum_s;
                         when others             => avl_readdata_o <= BAD_ADDRESS_VAL;
                     end case;
                 end if;
