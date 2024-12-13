@@ -140,7 +140,23 @@ begin
             if avl_reset_i = '1' then
                 button_s <= (others => '0');
                 switch_s <= (others => '0');
-                -- TODO initialize all the other signals
+					 char_1_s <= (others => '0');
+                char_2_s <= (others => '0');
+                char_3_s <= (others => '0');
+                char_4_s <= (others => '0');
+                char_5_s <= (others => '0');
+                char_6_s <= (others => '0');
+                char_7_s <= (others => '0');
+                char_8_s <= (others => '0');
+                char_9_s <= (others => '0');
+                char_10_s <= (others => '0');
+                char_11_s <= (others => '0');
+                char_12_s <= (others => '0');
+                char_13_s <= (others => '0');
+                char_14_s <= (others => '0');
+                char_15_s <= (others => '0');
+                char_16_s <= (others => '0');
+                checksum_s <= (others => '0');
             elsif rising_edge(avl_clk_i) then
                 button_s <= button_i;
                 switch_s <= switch_i;
@@ -182,7 +198,7 @@ begin
                         when BTN_ADDR           => avl_readdata_o(button_s'range)<= button_s;
                         when SWITCH_ADDR        => avl_readdata_o(switch_s'range)<= switch_s;
                         when LED_ADDR           => avl_readdata_o(leds_s'range)<= leds_s;
-                        when STATUS_CMD_ADDR  => avl_readdata_o(1 downto 0) <= lock_s & '1'; 
+                        when STATUS_CMD_ADDR    => avl_readdata_o(1 downto 0) <= '1' & lock_s; 
                         when MODE_DELAY_GEN_ADDR=> avl_readdata_o(31 downto 0) <= (31 downto 5 => '0') & auto_s & (3 downto 2 => '0') & delay_s(delay_s'range);
                         when CHAR_1_TO_4_ADDR   => avl_readdata_o(31 downto 0) <= char_1_s & char_2_s & char_3_s & char_4_s;
                         when CHAR_5_TO_8_ADDR   => avl_readdata_o(31 downto 0) <= char_5_s & char_6_s & char_7_s & char_8_s;
