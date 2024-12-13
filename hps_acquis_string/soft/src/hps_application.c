@@ -84,12 +84,6 @@ int main(void)
 		switches = Switchs_read();
 		read_keys(keys_state);
 
-		// Update the safe mode if SW0 state has changed
-		if ((switches & SWITCH_SAFE_MODE) !=
-		    (previous_switches & SWITCH_SAFE_MODE)) {
-			set_safe_mode(switches & SWITCH_SAFE_MODE);
-		}
-
 		// Update the LEDs based on the switches only if their state has changed
 		if (switches != previous_switches) {
 			Leds_write(switches & LED_MASK);
