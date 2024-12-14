@@ -140,13 +140,6 @@ uint32_t get_4_char(uint8_t chargroup_n);
 uint8_t get_checksum(void);
 
 /**
- * @brief Lock the update of the string from the fpga
- * @param safe 1 to lock, 0 to unlock
- * @return None
- */
-void set_safe_mode(uint8_t safe);
-
-/**
  * @brief Reads characters in bulk (4 at a time), calculates the integrity, 
  *        and displays the result.
  * @param mode The generation mode to use (0: unsafe, 1: safe).

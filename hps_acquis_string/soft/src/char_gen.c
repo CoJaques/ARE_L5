@@ -29,8 +29,7 @@
 
 void generator_init(void)
 {
-	INTERFACE_REG(CHAR_GEN_INIT_OFFSET) |= INIT_MASK; // Set the init bit
-	INTERFACE_REG(CHAR_GEN_INIT_OFFSET) &= ~INIT_MASK; // Clear the init bit
+	INTERFACE_REG(CHAR_GEN_INIT_OFFSET) = INIT_MASK; // Set the init bit
 	INTERFACE_REG(CHAR_GEN_LOCK_READ_OFFSET) = 0;
 }
 
@@ -91,24 +90,10 @@ uint8_t get_checksum(void)
 	return INTERFACE_REG(CHAR_GEN_CHECKSUM_OFFSET);
 }
 
-void set_safe_mode(uint8_t safe)
-{
-	if (safe) {
-		printf("Set mode safe\n");
-		INTERFACE_REG(CHAR_GEN_SAFE_MODE) = 1;
-	} else {
-		printf("Set mode unsafe\n");
-		INTERFACE_REG(CHAR_GEN_SAFE_MODE) = 0;
-	}
-}
-
 void calculate_integrity_bulk(uint8_t mode)
 {
 	if (mode) {
 		INTERFACE_REG(CHAR_GEN_LOCK_READ_OFFSET) = 1;
-
-		while (!(INTERFACE_REG(CHAR_GEN_STATUS_OFFSET) & 1)) {
-		}
 	}
 
 	uint8_t checksum = get_checksum(); // Retrieve the checksum value
