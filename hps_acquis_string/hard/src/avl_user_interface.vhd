@@ -89,7 +89,7 @@ architecture rtl of avl_user_interface is
     constant STATUS_CMD_ADDR    : std_logic_vector(13 downto 0):= "00" & x"004";
     constant MODE_DELAY_GEN_ADDR: std_logic_vector(13 downto 0):= "00" & x"005";
     constant LOCK_ADDR          : std_logic_vector(13 downto 0):= "00" & x"006";
-    constant SECURE_MODE_ADDR   : std_logic_vector(13 downto 0):= "00" & x"007";
+    constant RESERVED           : std_logic_vector(13 downto 0):= "00" & x"007";
     constant CHAR_1_TO_4_ADDR   : std_logic_vector(13 downto 0):= "00" & x"008";
     constant CHAR_5_TO_8_ADDR   : std_logic_vector(13 downto 0):= "00" & x"009";
     constant CHAR_9_TO_12_ADDR  : std_logic_vector(13 downto 0):= "00" & x"00A";
