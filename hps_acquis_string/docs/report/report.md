@@ -39,7 +39,7 @@ Date : **13.12.2024**
 
 ## <center>Table des matières {ignore=true}
 
-<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=3 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
@@ -47,14 +47,16 @@ Date : **13.12.2024**
 - [1. Partie 1 - Mise en place de l'interface de manière non fiable](#1-partie-1---mise-en-place-de-linterface-de-manière-non-fiable)
   - [1.1. Description des constantes et signaux](#11-description-des-constantes-et-signaux)
   - [1.2. Description des processus](#12-description-des-processus)
-    - [1.2.1. Synchronisation des entrées](#121-synchronisation-des-entrées)
-    - [1.2.2. Lecture des données](#122-lecture-des-données)
-    - [1.2.3. Ecriture des données](#123-ecriture-des-données)
   - [1.3. Developpement de la partie logiciel](#13-developpement-de-la-partie-logiciel)
-    - [**Fonctionnement détaillé :**](#fonctionnement-détaillé-)
-    - [**Code détaillé :**](#code-détaillé-)
-    - [**Formule utilisée pour vérifier l'intégrité :**](#formule-utilisée-pour-vérifier-lintégrité-)
-    - [**Affichage des résultats :**](#affichage-des-résultats-)
+  - [1.4. Analyse des résultats](#14-analyse-des-résultats)
+  - [1.5. Tests de validation](#15-tests-de-validation)
+- [2. Partie 2 - Mise en place de l'interface de manière fiable](#2-partie-2---mise-en-place-de-linterface-de-manière-fiable)
+  - [2.1. Description des constantes et signaux](#21-description-des-constantes-et-signaux)
+  - [2.2. Description des processus](#22-description-des-processus)
+  - [2.3. Adaptation de la partie logiciel](#23-adaptation-de-la-partie-logiciel)
+  - [2.4. Analyse des résultats](#24-analyse-des-résultats)
+  - [2.5. Tests de validation](#25-tests-de-validation)
+- [3. Conclusion](#3-conclusion)
 
 <!-- /code_chunk_output -->
 
@@ -71,13 +73,14 @@ Puis nous modifierons l'interface afin de corriger les problèmes d'intégrité 
 
 Dans cette partie, nous avons réalisé la description VHDL permettant de lire les données en provenance du générateur de chaine de caractères. Le principe est simple, les entrées sont simplement reportées sur le bus Avalon lors de demande de lecture de la part du `CPU`
 
+<!-- pagebreak -->
+
 ### 1.1. Description des constantes et signaux
 
 Afin de réaliser cette partie, nous devons dans un premier temps définir les constants et les signaux suivants:
 
 ```vhdl
     --| Constants declarations |--------------------------------------------------------------
-    
     constant USER_ID            : std_logic_vector(avl_readdata_o'range):= x"1234cafe";
     constant BAD_ADDRESS_VAL    : std_logic_vector(avl_readdata_o'range):= x"badcaffe";
     constant USER_ID_ADDR       : std_logic_vector(13 downto 0):= "00" & x"000";
@@ -140,6 +143,8 @@ Pour ce faire, nous devons prendre en compte le plan d'adressage suivant:
 
 Maintenant que nous avons tous les éléments à disposition, nous allons établir les descriptions VHDL des processus ainsi que les schemas permettant d'atteindre l'objectif de la partie 1.
 
+<!-- pagebreak -->
+
 #### 1.2.1. Synchronisation des entrées
 
 Pour ce faire il est nécessaire de synchroniser les entrées en provenance du périphérique `DE1-SoC`, à savoir:
@@ -169,7 +174,7 @@ Voici le schéma duquel le vhdl a été implémenté:
 
 Puis nous avons du créer un module permettant de lire les données en provenance du générateur de chaine de caractères pour les retransmettre sur le bus Avalon
 
-![alt text](read_part_1.svg)
+<img src="./read_part_1.svg" style="width:90%;">
 
 
 ```vhdl
@@ -202,6 +207,8 @@ Puis nous avons du créer un module permettant de lire les données en provenanc
         end process;
 
 ```
+<!-- pagebreak -->
+
 #### 1.2.3. Ecriture des données
 
 Enfin, nous avons du créer un module permettant d'écrire les données en provenance du bus Avalon. 
@@ -344,21 +351,39 @@ Le calcul du checksum est basé sur la somme des caractères ASCII générés et
 
   Pour tester l'application et afin de répondre aux exigeances du laboratoire, nous avons réalisé une application permettant de tester l'interface. Cette application à la même structure que celle réalisée pour les laboratoires précédents. Nous appelons simplement la fonction `calculate_integrity_bulk` à chaque itération de la boucle principale lorsque le bouton correspondant à la lecture des données est pressé.
 
-  ```c
+<!-- pagebreak -->
 
 ### 1.4. Analyse des résultats
 
 Nous avons maintenant un système fonctionnel permettant de lire les données en provenance du générateur de chaine de caractères. Nous avons pu constater que les données étaient bien transmises et que le système fonctionnait partiellement. 
 
+Voici un exemple:
+
 ```markdown
-- **ER:** checksum: `0xC8`, calculated: `0x61B`, string: *Emberatofinitem*
-  - **Error count:** 1
-- **ER:** checksum: `0x0E`, calculated: `0x549`, string: *Game-VD finione*
-  - **Error count:** 2
-- **ER:** checksum: `0xBA`, calculated: `0x525`, string: *Gagno woRedse*
-  - **Error count:** 3
-- **ER:** checksum: `0xBA`, calculated: `0x605`, string: *Pausddedfinieek*
-  - **Error count:** 4
+
+**OK:** checksum: `0x20`, calculated: `0xE0`, string: *Tout va bien?*
+**OK:** checksum: `0x20`, calculated: `0xE0`, string: *Tout va bien?*
+**OK:** checksum: `0x20`, calculated: `0xE0`, string: *Tout va bien?*
+**OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+**OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+**OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+**OK:** checksum: `0x1F`, calculated: `0xE1`, string: *Continue encore*
+**OK:** checksum: `0x1F`, calculated: `0xE1`, string: *Continue encore*
+**OK:** checksum: `0x1F`, calculated: `0xE1`, string: *Continue encore*
+**OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+**OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+**OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+
+---- Augmentations de la fréquence de lecture ----
+
+**ER:** checksum: `0xC8`, calculated: `0x61B`, string: *Emberatofinitem*
+**Error count:** 1
+**ER:** checksum: `0x0E`, calculated: `0x549`, string: *Game-VD finione*
+**Error count:** 2
+**ER:** checksum: `0xBA`, calculated: `0x525`, string: *Gagno woRedse*
+**Error count:** 3
+**ER:** checksum: `0xBA`, calculated: `0x605`, string: *Pausddedfinieek*
+**Error count:** 4
 ```
 
 En effet, la simple transmission des entrées du générateur de chaines de caractères vers le bus avalon ne permet pas de garantir l'intégrité des données.
@@ -383,6 +408,7 @@ Pour valider le bon fonctionnement de l'interface, nous avons réalisé plusieur
 - Test de changement de délai de génération
 
 Nous avons pu constater que l'interface fonctionnait correctement et que les données étaient bien transmises. Cependant, nous avons pu constater que l'intégrité des données n'était pas garantie lorsque la vitesse était trop élevée.
+<!-- pagebreak -->
 
 ## 2. Partie 2 - Mise en place de l'interface de manière fiable
 
@@ -391,6 +417,7 @@ Le problème rencontré dans la partie 1 étant connu, nous allons maintenant me
 Nous avons décidé de ne pas contrôler qu'un nouvel instantané soit disponible lors de la lecture. En effet, grâce à notre implémentation, lorsque le cpu a bloqué l'écriture des données, il peut lire les données précédentes sans problème sans avoir à contrôler qu'un nouvel instantané soit disponible.
 
 Nous pouvons donc intégrer un principe de verrouillage des données.
+<!-- pagebreak -->
 
 ### 2.1. Description des constantes et signaux
 
@@ -451,7 +478,7 @@ Mainentant que nous avons un plan d'adressage complet, nous allons adapter les d
 
 Comme pour la partie 1, nous devons synchroniser les entrées en provenance du périphérique `DE1-SoC` mais maintenant, nous allons aussi synchroniser les entrées en provenance du générateur de chaine de caractères.
 
-![alt text](sync_part_2.svg)
+<img src="./sync_part_2.svg" style="width:90%;">
 
 Comme on peut le voir sur ce schéma, nous avons ajouté une condition de synchronisation pour les entrées en provenance du générateur de chaine de caractères grâce à un signal `lock_s` qui permettra de désactiver le registre de synchronisation.
 
@@ -506,12 +533,13 @@ Comme on peut le voir sur ce schéma, nous avons ajouté une condition de synchr
 ```
 
 Nous pouvons maintenant passer à la lecture des données.
+<!-- pagebreak -->
 
 #### 2.2.2 Lecture des données
 
 Puis, nous allons adapter le module permettant de lire les données en provenance du générateur de chaine de caractères pour les retransmettre sur le bus avalon de manière fiable.
 
-![alt text](read_part_2.svg)
+<img src="./read_part_2.svg" style="width:90%;">
 
 
 ```vhdl
@@ -543,6 +571,7 @@ Puis, nous allons adapter le module permettant de lire les données en provenanc
             end if;
         end process;
 ```
+<!-- pagebreak -->
 
 #### 2.2.3. Ecriture des données
 
@@ -578,6 +607,7 @@ write_access: process(avl_clk_i, avl_reset_i)
             end if;
         end process;
 ```
+<!-- pagebreak -->
 
 ### 2.3. Adaptation de la partie logiciel
 
@@ -627,6 +657,8 @@ Les modifications permettent désormais de garantir une lecture cohérente des 1
 ### 2.4. Analyse des résultats
 
 Maintenant que le système est en place, nous pouvons constater que les données sont bien transmises et que l'intégrité des données est garantie.
+
+Voici un exemple de lecture des données à la fréquence maximale:
 
 ```markdown
 - **OK:** checksum: `0x20`, calculated: `0xE0`, string: *Tout va bien?*
