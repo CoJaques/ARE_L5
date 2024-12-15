@@ -119,13 +119,6 @@ int generator_get_speed(void);
 void generator_generate(void);
 
 /**
- * @brief Reads a specific character from the 16-character string.
- * @param char_n The index of the character to read (0-15).
- * @return char The ASCII value of the character.
- */
-char read_char(uint8_t char_n);
-
-/**
  * @brief Reads a group of 4 characters from the 16-character string.
  * @param chargroup_n The group index to read (0-3).
  * @return uint32_t The 4 characters packed into a 32-bit value.

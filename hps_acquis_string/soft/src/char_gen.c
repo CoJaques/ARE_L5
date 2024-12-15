@@ -67,17 +67,6 @@ void generator_generate(void)
 		NEW_CHAR_MASK; // Trigger new char
 }
 
-char read_char(uint8_t char_n)
-{
-	if (char_n > 15)
-		return 0; // Invalid character number
-
-	uint32_t group_offset = CHAR_GEN_CHAR_GROUP_1 + (char_n / 4) * 4;
-	uint32_t shift = (3 - (char_n % 4)) * 8;
-
-	return (INTERFACE_REG(group_offset) >> shift) & 0xFF;
-}
-
 uint32_t get_4_char(uint8_t chargroup_n)
 {
 	if (chargroup_n > 3)

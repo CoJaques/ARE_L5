@@ -34,7 +34,7 @@
 
 // Constant ID
 #define CONST_ID	   AXI_LW_REG(0x0)
-#define	INTERFACE_ID   INTERFACE_REG(0x0)
+#define INTERFACE_ID	   INTERFACE_REG(0x0)
 #define BUTTON_REG	   INTERFACE_REG(0x4)
 #define SWITCH_REG	   INTERFACE_REG(0x8)
 #define LED_REG		   INTERFACE_REG(0xC)

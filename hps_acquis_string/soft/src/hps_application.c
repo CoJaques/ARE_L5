@@ -33,9 +33,9 @@
 
 int __auto_semihosting;
 
-#define NUM_KEYS 4 // Number of keys on the board
-#define SWITCH_SAFE_MODE (1 << 0) // Switch to enable safe mode
-#define SWITCH_GEN_MODE (1 << 7) // Switch to change generation mode
+#define NUM_KEYS	  4 // Number of keys on the board
+#define SWITCH_SAFE_MODE  (1 << 0) // Switch to enable safe mode
+#define SWITCH_GEN_MODE	  (1 << 7) // Switch to change generation mode
 #define SWITCHS_GEN_SPEED (3 << 8) // Switch to change generation speed
 
 /**
