@@ -69,13 +69,13 @@ Date : **13.12.2024**
 
 ## 0. Introduction
 
-Ce laboratoire à pour but de creer un interface permettant la lecture d'une chaine de caractère depuis un générateur.
+Ce laboratoire a pour but de créer une interface permettant la lecture d'une chaine de caractère depuis un générateur.
 Dans un premier temps, nous allons simplement lire les chaines de caractères et les afficher dans la console. Nous ferons une analyse du fonctionnement de l'interface et des problèmes rencontrés.
-Puis nous modifierons l'interface afin de corriger les problèmes d'integrité des données. 
+Puis nous modifierons l'interface afin de corriger les problèmes d'intégrité des données. 
 
 ## 1. Partie 1 - Mise en place de l'interface de manière non fiable
 
-Dans cette partie, nous avons réalisé la description VHDL permettant de lire les données en provenance du générateur de chaine de caractères. Le principe est simple, les entrées sont simplement reportées sur le le bus Avalon lors de demande de lecture de la part du `CPU`
+Dans cette partie, nous avons réalisé la description VHDL permettant de lire les données en provenance du générateur de chaine de caractères. Le principe est simple, les entrées sont simplement reportées sur le bus Avalon lors de demande de lecture de la part du `CPU`
 
 ### 1.1. Description des constantes et signaux
 
@@ -119,7 +119,7 @@ Afin de réaliser cette partie, nous devons dans un premier temps définir les c
 
 ### 1.2. Description des processus
 
-Maintenant que nous connaissons les constantes et les signaux, nous allons établir la descriptions `VHDL` ainsi que les schemas permettant de répondre au schema bloc suivant:
+Maintenant que nous connaissons les constantes et les signaux, nous allons établir la description `VHDL` ainsi que les schémas permettant de répondre au schéma bloc suivant:
 
 ![alt text](image.png)
 
@@ -144,16 +144,16 @@ Pour ce faire, nous devons prendre en compte le plan d'adressage suivant:
 | `0x40` … `0xFFFC` | not used                                                                                | not used                                                                        |
 
 
-Maitenant que nous avons tout les éléments à disposition, nous allons établir les descriptions VHDL des processus ainsi que les schemas permettant d'atteindre l'objectif de la partie 1.
+Maintenant que nous avons tous les éléments à disposition, nous allons établir les descriptions VHDL des processus ainsi que les schemas permettant d'atteindre l'objectif de la partie 1.
 
 #### 1.2.1. Synchronisation des entrées
 
-Pour se faire il est necessaire de synchroniser les entrées en provenance du périphérique `DE1-SoC`, à savoir:
+Pour ce faire il est nécessaire de synchroniser les entrées en provenance du périphérique `DE1-SoC`, à savoir:
 
 - `button_i`
 - `switch_i`
 
-Voici le schéma desquels le vhdl a été implémenté:
+Voici le schéma duquel le vhdl a été implémenté:
 
 ![alt text](sync_part_1.svg)
 
@@ -173,7 +173,7 @@ Voici le schéma desquels le vhdl a été implémenté:
 
 #### 1.2.2. Lecture des données
 
-Puis nous avons du créer un module permettant de lire les données en provenance du générateur de chaine de caractères pour les retransmettre sur le bus avalon
+Puis nous avons du créer un module permettant de lire les données en provenance du générateur de chaine de caractères pour les retransmettre sur le bus Avalon
 
 ![alt text](read_part_1.svg)
 
@@ -210,7 +210,7 @@ Puis nous avons du créer un module permettant de lire les données en provenanc
 ```
 #### 1.2.3. Ecriture des données
 
-Enfin, nous avons du créer un module permettant d'écrire les données en provenance du bus avalon. 
+Enfin, nous avons du créer un module permettant d'écrire les données en provenance du bus Avalon. 
 Cela nous permet de commander le générateur de chaine de caractères.
 
 ![alt text](write_part_1.svg)
@@ -244,7 +244,7 @@ write_access: process(avl_clk_i, avl_reset_i)
 
 Vazy colin tu es trop fort, le meilleur de tous les temps, tu vas tout réussir dans la vie, pas comme alexandre qui est un gros nul. Vraiment un gros nul. Je suis tellement nul que je ne sais pas écrire correctement. C'est vraiment triste. 
 
-PS: Nique sa mère copilot car c'est lui qui a écrit les phrases précédentes. (Ca c'est moi qui l'ai écris).
+PS: Nique sa mère copilot car c'est lui qui a écrit les phrases précédentes. (Ça, c'est moi qui l'ai écrit).
 
 ### 1.4. Analyse des résultats
 
@@ -254,9 +254,9 @@ Nous avons maintenant un système fonctionnel permettant de lire les données en
 
 En effet, la simple transmission des entrées de du générateur de chaines de caractères vers le bus avalon ne permet pas de garantir l'intégrité des données.
 
-Lors d'une transmission de chaine de charactère a une fréquence moins élevé que la fréquence de lecture, les chaines de charactères sont, dans la majeur partie des cas, bien transmises. Cependant, lors d'une transmission de chaine de caractère à une fréquence plus élevée que la fréquence de lecture, les chaines de caractères sont tronquées.
+Lors d'une transmission de chaine de caractère a une fréquence moins élevé que la fréquence de lecture, les chaines de caractères sont, dans la majeure partie des cas, bien transmises. Cependant, lors d'une transmission de chaine de caractère à une fréquence plus élevée que la fréquence de lecture, les chaines de caractères sont tronquées.
 
-En raison de la faible vitesse de lecture du `CPU`, la `FPGA` ecrit les données trop rapidement pour que le `CPU` puisse lire les 16 charactères avant que la chaine de caractère suivante ne soit réecrite.
+En raison de la faible vitesse de lecture du `CPU`, la `FPGA` écrit les données trop rapidement pour que le `CPU` puisse lire les 16 caractères avant que la chaine de caractère suivante ne soit réécrite.
 
 De cette analyse, nous pouvons conclure que l'intégrité des données n'est pas garantie, et ce, même à basse fréquence. 
 
@@ -264,9 +264,9 @@ Il nous faut donc trouver une solution pour garantir l'intégrité des données.
 
 ## 2. Partie 2 - Mise en place de l'interface de manière fiable
 
-Le problème rencontré dans la partie 1 etant connu, nous allons maintenant mettre en place une interface fiable permettant de garantir l'intégrité des données. Pour ce faire, il serait idéal de bloquer l'ecriture des données provenant du générateur de chaine de caractères tant que le `CPU` n'a pas terminé la lecture des données précédentes.
+Le problème rencontré dans la partie 1 étant connu, nous allons maintenant mettre en place une interface fiable permettant de garantir l'intégrité des données. Pour ce faire, il serait idéal de bloquer l'écriture des données provenant du générateur de chaine de caractères tant que le `CPU` n'a pas terminé la lecture des données précédentes.
 
-Nous pouvons donc integrer un pricipe de verrouillage des données.
+Nous pouvons donc intégrer un principe de verrouillage des données.
 
 ### 2.1. Description des constantes et signaux
 
@@ -300,7 +300,7 @@ puis nous ajoutons les signaux permettant de sauvegarder l'état de la chaine de
 
 ### 2.2. Description des processus
 
-Comme nous avons un espace d'adressage disponible à l'adresse `0x18` nous allons l'utiliser pour ecrire un bit de verrouillage. que nous nommerons `lock`.
+Comme nous avons un espace d'adressage disponible à l'adresse `0x18` nous allons l'utiliser pour écrire un bit de verrouillage, que nous nommerons `lock`.
 
 | Adresse (offset)  | **Read**                                                                                | **Write**                                                                       |
 | ----------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
@@ -320,16 +320,16 @@ Comme nous avons un espace d'adressage disponible à l'adresse `0x18` nous allon
 | `0x34` … `0x3C`   | reserved                                                                                | reserved                                                                        |
 | `0x40` … `0xFFFC` | not used                                                                                | not used                                                                        |
 
-Mainentant que nous avons un plan d'adressage complet, nous allons adapter les descriptions VHDL des processus ainsi que les schemas permettant d'atteindre l'objectif de la partie 2.
+Mainentant que nous avons un plan d'adressage complet, nous allons adapter les descriptions VHDL des processus ainsi que les schémas permettant d'atteindre l'objectif de la partie 2.
 
 
 #### 2.2.1 Synchronisation des entrées
 
-Comme pour la partie 1, nous devons synchroniser les entrées en provenance du périphérique `DE1-SoC` mais maintenant, nous allons aussi synchroniser les entrées en provenance du générateur de chaine de charactères.
+Comme pour la partie 1, nous devons synchroniser les entrées en provenance du périphérique `DE1-SoC` mais maintenant, nous allons aussi synchroniser les entrées en provenance du générateur de chaine de caractères.
 
 ![alt text](sync_part_2.svg)
 
-Comme on peut le voir sur ce schema, nous avons ajouter une condition de synchronisation pour les entrées en provenance du générateur de chaine de caractères grace à un signal `lock_s` qui permettra de désactiver le registre de synchronisation.
+Comme on peut le voir sur ce schéma, nous avons ajouté une condition de synchronisation pour les entrées en provenance du générateur de chaine de caractères grâce à un signal `lock_s` qui permettra de désactiver le registre de synchronisation.
 
 ```vhdl
  -- sync input part
@@ -385,7 +385,7 @@ Nous pouvons maintenant passer à la lecture des données.
 
 #### 2.2.2 Lecture des données
 
-Puis nous allons adapter le module permettant de lire les données en provenance du générateur de chaine de caractères pour les retransmettre sur le bus avalon de manière fiable.
+Puis, nous allons adapter le module permettant de lire les données en provenance du générateur de chaine de caractères pour les retransmettre sur le bus avalon de manière fiable.
 
 ![alt text](read_part_2.svg)
 
@@ -422,7 +422,7 @@ Puis nous allons adapter le module permettant de lire les données en provenance
 
 #### 2.2.3. Ecriture des données
 
-Enfin, nous adaptons le module permettant d'écrire les données en provenance du bus avalon. 
+Enfin, nous adaptons le module permettant d'écrire les données en provenance du bus Avalon. 
 
 ![alt text](write_part_2.svg)
 
@@ -461,16 +461,16 @@ write_access: process(avl_clk_i, avl_reset_i)
 
 ### 2.4. Analyse des résultats
 
-Maintenant que le système est en place, nous pouvons constater que les données sont bien transmises et que l'integrité des données est garantie.
+Maintenant que le système est en place, nous pouvons constater que les données sont bien transmises et que l'intégrité des données est garantie.
 
 //TODO: Output de la console
 
-Cela est dû au fait que nous avons ajouté un bit de verrouillage qui permet de bloquer l'ecriture des données tant que le `CPU` n'a pas terminé la lecture des données précédentes.
+Cela est dû au fait que nous avons ajouté un bit de verrouillage qui permet de bloquer l'écriture des données tant que le `CPU` n'a pas terminé la lecture des données précédentes.
 
 
 ## 3. Conclusion
 
-Ce laboratoire a permis de concevoir une interface fiable sur le bus Avalon, tout en étudiant les aspects essentiels du plan d'adressage, de la synchronisation des entrées, et de la gestion d'un bit de verrouillage. L'implémentation en VHDL et le test sur les cartes DE1-SoC ont confirmé le bon fonctionnement du système. Nous avons pu comprendre l'importance de maintenir verouiller une donnée pour qu'elle puisse être lue dans son integralité par le `CPU`.
+Ce laboratoire a permis de concevoir une interface fiable sur le bus Avalon, tout en étudiant les aspects essentiels du plan d'adressage, de la synchronisation des entrées, et de la gestion d'un bit de verrouillage. L'implémentation en VHDL et le test sur les cartes DE1-SoC ont confirmé le bon fonctionnement du système. Nous avons pu comprendre l'importance de maintenir verrouiller une donnée pour qu'elle puisse être lue dans son intégralité par le `CPU`.
 
 Ce laboratoire renforce notre compréhension des interfaces.
 
