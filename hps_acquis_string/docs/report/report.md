@@ -263,7 +263,7 @@ Les premières fonctions étant relativement triviale, seule les fonctions de le
 
 La fonction principale développée pour ce laboratoire est `calculate_integrity_bulk`. Elle permet de lire les 16 caractères générés par le périphérique FPGA, d'effectuer un calcul d'intégrité avec le checksum fourni, et de vérifier si les données sont cohérentes. Cette fonction est essentielle pour valider le bon fonctionnement de l'interface.
 
-#### **Fonctionnement détaillé :**
+**Fonctionnement détaillé :**
 
 1. **Lecture des caractères :**  
    La fonction lit les 16 caractères générés, regroupés en 4 blocs de 4 caractères (32 bits chacun). Chaque caractère est extrait à l'aide d'un décalage binaire, puis ajouté à une somme pour préparer le calcul d'intégrité.
@@ -282,7 +282,7 @@ La fonction principale développée pour ce laboratoire est `calculate_integrity
 4. **Mode fiable désactivé :**  
    Aucune mesure n'est prise pour verrouiller l'acquisition, ce qui peut entraîner des erreurs d'intégrité si les données changent entre les lectures.
 
-#### **Code détaillé :**
+**Code détaillé :**
 
 ```c
 void calculate_integrity_bulk() {
@@ -319,7 +319,7 @@ void calculate_integrity_bulk() {
 }
 ```
 
-#### **Formule utilisée pour vérifier l'intégrité :**
+**Formule utilisée pour vérifier l'intégrité :**
 Le calcul du checksum est basé sur la somme des caractères ASCII générés et du checksum reçu. L'intégrité est valide si la condition suivante est respectée :
 \[
 \text{(Somme des caractères + checksum)} \mod 256 = 0
@@ -327,7 +327,7 @@ Le calcul du checksum est basé sur la somme des caractères ASCII générés et
 
 - Cette propriété est utilisée pour détecter des erreurs de transmission ou de synchronisation des données.
 
-#### **Affichage des résultats :**
+**Affichage des résultats :**
 - **Message OK :**  
   Si l'intégrité est correcte, la console affiche un message avec le checksum attendu, la somme calculée, et la chaîne complète :
   ```
@@ -340,7 +340,7 @@ Le calcul du checksum est basé sur la somme des caractères ASCII générés et
   ER: error count: X
   ```
 
-  ### Application de test
+  **Application de test**
 
   Pour tester l'application et afin de répondre aux exigeances du laboratoire, nous avons réalisé une application permettant de tester l'interface. Cette application à la même structure que celle réalisée pour les laboratoires précédents. Nous appelons simplement la fonction `calculate_integrity_bulk` à chaque itération de la boucle principale lorsque le bouton correspondant à la lecture des données est pressé.
 
