@@ -128,7 +128,6 @@ architecture rtl of avl_user_interface is
     signal delay_s           : std_logic_vector(1 downto 0);
     signal cmd_init_s        : std_logic;
     signal cmd_new_char_s    : std_logic;
-
     signal lock_s        :   std_logic;
 
 begin
@@ -140,7 +139,7 @@ begin
             if avl_reset_i = '1' then
                 button_s <= (others => '0');
                 switch_s <= (others => '0');
-					 char_1_s <= (others => '0');
+		char_1_s <= (others => '0');
                 char_2_s <= (others => '0');
                 char_3_s <= (others => '0');
                 char_4_s <= (others => '0');
