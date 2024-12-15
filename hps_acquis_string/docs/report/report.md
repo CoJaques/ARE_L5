@@ -350,7 +350,16 @@ Le calcul du checksum est basé sur la somme des caractères ASCII générés et
 
 Nous avons maintenant un système fonctionnel permettant de lire les données en provenance du générateur de chaine de caractères. Nous avons pu constater que les données étaient bien transmises et que le système fonctionnait partiellement. 
 
-//TODO: Output de la console
+```markdown
+- **ER:** checksum: `0xC8`, calculated: `0x61B`, string: *Emberatofinitem*
+  - **Error count:** 1
+- **ER:** checksum: `0x0E`, calculated: `0x549`, string: *Game-VD finione*
+  - **Error count:** 2
+- **ER:** checksum: `0xBA`, calculated: `0x525`, string: *Gagno woRedse*
+  - **Error count:** 3
+- **ER:** checksum: `0xBA`, calculated: `0x605`, string: *Pausddedfinieek*
+  - **Error count:** 4
+```
 
 En effet, la simple transmission des entrées du générateur de chaines de caractères vers le bus avalon ne permet pas de garantir l'intégrité des données.
 
@@ -361,6 +370,19 @@ En raison de la faible vitesse de lecture du `CPU`, la `FPGA` écrit les donnée
 De cette analyse, nous pouvons conclure que l'intégrité des données n'est pas garantie, et ce, même à basse fréquence. 
 
 Il nous faut donc trouver une solution pour garantir l'intégrité des données. Cela introduit donc la partie 2 de ce laboratoire.
+
+### 1.5. Tests de validation
+
+Pour valider le bon fonctionnement de l'interface, nous avons réalisé plusieurs tests. Ces tests ont permis de vérifier que les données étaient bien transmises et que l'intégrité des données était garantie. Nous avons commencés par réaliser des tests en simulations dans le but de valider le fonctionnement de l'interface. Puis, nous avons réalisé des tests sur la carte DE1-SoC pour valider le fonctionnement de l'interface en conditions réelles. Les tests réalisés sont les suivants:
+
+- Test de la copie des valeurs des switchs sur les leds
+- Test d'initialisation du générateur de chaine de caractères
+- Test de lecture en mode manuel
+- Test de génération manuel d'une nouvelle string
+- Test de génération automatique de string
+- Test de changement de délai de génération
+
+Nous avons pu constater que l'interface fonctionnait correctement et que les données étaient bien transmises. Cependant, nous avons pu constater que l'intégrité des données n'était pas garantie lorsque la vitesse était trop élevée.
 
 ## 2. Partie 2 - Mise en place de l'interface de manière fiable
 
@@ -606,10 +628,23 @@ Les modifications permettent désormais de garantir une lecture cohérente des 1
 
 Maintenant que le système est en place, nous pouvons constater que les données sont bien transmises et que l'intégrité des données est garantie.
 
-//TODO: Output de la console
+```markdown
+- **OK:** checksum: `0x20`, calculated: `0xE0`, string: *Tout va bien?*
+- **OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+- **OK:** checksum: `0x1F`, calculated: `0xE1`, string: *Continue encore*
+- **OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+- **OK:** checksum: `0xBA`, calculated: `0x46`, string: *Essaye encore*
+- **OK:** checksum: `0xE6`, calculated: `0x1A`, string: *Bientot fini?*
+- **OK:** checksum: `0x6E`, calculated: `0x92`, string: *Bientot le week*
+```
 
 Cela est dû au fait que nous avons ajouté un bit de verrouillage qui permet de bloquer l'écriture des données tant que le `CPU` n'a pas terminé la lecture des données précédentes.
 
+### 2.5. Tests de validation
+
+Pour valider le bon fonctionnement de l'interface, nous avons réalisé plusieurs tests. Ces tests ont permis de vérifier que les données étaient bien transmises et que l'intégrité des données était garantie. Nous avons commencés par réaliser des tests en simulations dans le but de valider le fonctionnement de l'interface. Puis, nous avons réalisé des tests sur la carte DE1-SoC pour valider le fonctionnement de l'interface en conditions réelles. Les tests réalisés sont les mêmes que lors de la première partie.
+
+Nous avons pu constater que l'interface fonctionnait correctement et que les données étaient bien transmises. Nous avons pu constater que l'intégrité des données était garantie même à haute fréquence. Nous avons ensuite pu faire valider le bon fonctionnement de l'interface par le professeur.
 
 ## 3. Conclusion
 
